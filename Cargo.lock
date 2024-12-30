@@ -981,6 +981,31 @@ dependencies = [
 ]
 
 [[package]]
+name = "missmatch"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "axum",
+ "clap",
+ "http-body-util",
+ "listenfd",
+ "mime",
+ "minijinja",
+ "ndarray 0.16.1",
+ "ort",
+ "serde",
+ "serde_json",
+ "serde_yaml",
+ "tokenizers",
+ "tokio",
+ "tower",
+ "tower-http",
+ "tracing",
+ "tracing-error",
+ "tracing-subscriber",
+]
+
+[[package]]
 name = "monostate"
 version = "0.1.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1336,31 +1361,6 @@ dependencies = [
  "spin",
  "untrusted",
  "windows-sys 0.52.0",
-]
-
-[[package]]
-name = "rust-http"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "axum",
- "clap",
- "http-body-util",
- "listenfd",
- "mime",
- "minijinja",
- "ndarray 0.16.1",
- "ort",
- "serde",
- "serde_json",
- "serde_yaml",
- "tokenizers",
- "tokio",
- "tower",
- "tower-http",
- "tracing",
- "tracing-error",
- "tracing-subscriber",
 ]
 
 [[package]]
