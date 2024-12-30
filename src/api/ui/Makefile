@@ -1,7 +1,3 @@
-.PHONY: browser-sync
-browser-sync:
-	npx browser-sync start --proxy "localhost:8080" --files "air/main" --no-open
-
 .PHONY: update-htmx
 update-htmx:
 	mkdir -p ./public/static
