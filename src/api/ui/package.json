@@ -1,0 +1,17 @@
+{
+  "name": "ui",
+  "description": "htmx-tailwind-ui",
+  "main": "postcss.config.js",
+  "scripts": {
+    "build": "postcss ./input.css -o ./public/static/output.css"
+  },
+  "dependencies": {
+    "autoprefixer": "^10.4.19",
+    "cssnano": "^7.0.1",
+    "daisyui": "^4.10.3",
+    "postcss-cli": "^11.0.0"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.17"
+  }
+}

@@ -1,0 +1,18 @@
+<form hx-post="/components/submit" hx-ext="json-enc" hx-target="this" hx-swap="outerHTML">
+  <div class="flex flex-col space-y-4 p-4 max-w-md mx-auto">
+    <input type="text" name="word1" placeholder="First word"
+      class="input input-bordered input-primary w-full max-w-xs mx-auto">
+    <input type="text" name="word2" placeholder="Second word"
+      class="input input-bordered input-primary w-full max-w-xs mx-auto">
+    <button type="submit" class="btn btn-primary max-w-xs mx-auto">
+      Submit Words
+    </button>
+    {% if score is defined %}
+    <div class="max-w-xs mx-auto text-center">
+      word1: {{ word1 }}<br>
+      word2: {{ word2 }}<br>
+      Score: {{ score }}
+    </div>
+    {% endif %}
+  </div>
+</form>
