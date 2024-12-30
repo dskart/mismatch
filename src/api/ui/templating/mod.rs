@@ -8,7 +8,7 @@ pub struct TemplateState {
 impl TemplateState {
     pub fn new() -> anyhow::Result<Self> {
         let env = Environment::new();
-        return Ok(Self { templates: env });
+        Ok(Self { templates: env })
     }
 
     pub fn add_template(
@@ -19,6 +19,6 @@ impl TemplateState {
         self.templates
             .add_template(name, content)
             .map_err(|_| anyhow::anyhow!("failed to add template {}", name))?;
-        return Ok(());
+        Ok(())
     }
 }

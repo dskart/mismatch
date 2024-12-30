@@ -11,7 +11,7 @@ pub struct Api {}
 
 impl Api {
     pub fn new() -> Self {
-        return Api {};
+        Api {}
     }
 
     pub fn get_router(&self) -> Result<axum::Router> {
@@ -19,7 +19,7 @@ impl Api {
             .route("/healthz", routing::get(healthz_handler))
             .nest("/", ui::get_router()?)
             .layer(TraceLayer::new_for_http());
-        return Ok(router);
+        Ok(router)
     }
 }
 
@@ -29,9 +29,9 @@ struct HealthzResponse {
 }
 
 async fn healthz_handler() -> Json<HealthzResponse> {
-    return Json(HealthzResponse {
+    Json(HealthzResponse {
         status: "ok".to_string(),
-    });
+    })
 }
 
 #[cfg(test)]

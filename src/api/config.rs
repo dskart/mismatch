@@ -4,8 +4,8 @@ use serde::Deserialize;
 
 #[derive(Default, Deserialize, Debug)]
 pub struct Config {
-    #[serde(rename = "Foo", default)]
-    pub foo: String,
+    #[serde(rename = "MyVar", default)]
+    pub my_var: String,
 }
 
 impl Config {
@@ -14,10 +14,11 @@ impl Config {
     }
 
     pub fn load_from_env(&mut self, prefix: &str) -> Result<()> {
-        if let std::result::Result::Ok(foo) = std::env::var([prefix, "FOO"].join("").as_str()) {
-            self.foo = foo
+        if let std::result::Result::Ok(my_var) = std::env::var([prefix, "MY_VAR"].join("").as_str())
+        {
+            self.my_var = my_var
                 .parse()
-                .expect(format!("could not parse {}", [prefix, "FOO"].join("")).as_str());
+                .unwrap_or_else(|_| panic!("could not parse {}", [prefix, "MY_VAR"].join("")));
         }
         Ok(())
     }

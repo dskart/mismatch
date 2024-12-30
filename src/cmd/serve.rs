@@ -16,7 +16,7 @@ pub fn cmd() -> clap::Command {
         .value_parser(value_parser!(usize))
         .help("the port for the http api to listen on");
 
-    return clap::Command::new(CMD_NAME).arg(port_arg);
+    clap::Command::new(CMD_NAME).arg(port_arg)
 }
 
 pub async fn run(_config: Config, args: &clap::ArgMatches) -> Result<()> {

@@ -30,7 +30,7 @@ impl PageRegistration for HomePage {
             .with_state(Arc::new(template_state))
             .nest("/components", components_router);
 
-        return anyhow::Ok(router);
+        anyhow::Ok(router)
     }
 }
 
@@ -38,9 +38,9 @@ async fn handle_index(
     State(state): State<Arc<templating::TemplateState>>,
 ) -> Result<Html<String>, StatusCode> {
     let template = state.templates.get_template("index.html.j2").unwrap();
-    let rendered = template.render(context!()).or_else(|e| {
+    let rendered = template.render(context!()).map_err(|e| {
         error!("Failed to render template: {}", e);
-        Err(StatusCode::INTERNAL_SERVER_ERROR)
+        StatusCode::INTERNAL_SERVER_ERROR
     })?;
 
     Ok(Html(rendered))

@@ -1,6 +1,5 @@
 use crate::cmd::Config;
 use anyhow::{Ok, Result};
-use clap;
 use tracing::info;
 
 pub const CMD_NAME: &str = "hello-world";

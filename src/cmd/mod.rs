@@ -29,7 +29,7 @@ pub async fn execute() -> i32 {
         error!("{}", e);
         return 1;
     }
-    return 0;
+    0
 }
 
 pub async fn set_up_and_exec() -> Result<()> {

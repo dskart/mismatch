@@ -17,7 +17,7 @@ pub fn get_router() -> anyhow::Result<axum::Router> {
     let router = axum::Router::new().nest_service("/public", ServeDir::new(public_path));
     let router = register_pages(&mut template_state, router)?;
 
-    return anyhow::Ok(router);
+    anyhow::Ok(router)
 }
 
 pub trait PageRegistration {
