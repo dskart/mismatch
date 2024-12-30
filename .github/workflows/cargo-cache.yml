@@ -1,0 +1,19 @@
+name: 📦 Cargo Cache
+on:
+  workflow_call:
+
+jobs:
+  cache-cargo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Cache cargo"
+        id: cache-cargo
+        uses: "actions/cache@v4"
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
