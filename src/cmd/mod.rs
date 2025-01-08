@@ -6,33 +6,13 @@ use tracing_error::ErrorLayer;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 mod config;
-mod hello_world;
 use config::Config;
+
+mod embeddings;
+mod hello_world;
 mod serve;
 
 pub async fn execute() -> i32 {
-    let stdin = std::io::stdin();
-    let tracing_registry = tracing_subscriber::registry().with(ErrorLayer::default());
-
-    if stdin.is_terminal() {
-        tracing_registry
-            .with(tracing_subscriber::fmt::layer().pretty())
-            .init();
-    } else {
-        tracing_registry
-            .with(tracing_subscriber::fmt::layer().json().flatten_event(true))
-            .init();
-    }
-
-    // setup logger
-    if let Err(e) = set_up_and_exec().await {
-        error!("{}", e);
-        return 1;
-    }
-    0
-}
-
-pub async fn set_up_and_exec() -> Result<()> {
     let matches = clap::Command::new("my-service")
         .arg_required_else_help(true)
         .about("TODO")
@@ -52,11 +32,42 @@ pub async fn set_up_and_exec() -> Result<()> {
         )
         .subcommand(hello_world::cmd())
         .subcommand(serve::cmd())
+        .subcommand(embeddings::cmd())
         .get_matches();
 
-    let config = setup_config(&matches)?;
+    // setup logger
+    if let Err(e) = set_up_and_exec(&matches).await {
+        error!("{}", e);
+        return 1;
+    }
+    0
+}
 
-    return root_cmd(&matches, config).await;
+pub async fn set_up_and_exec(matches: &clap::ArgMatches) -> Result<()> {
+    let log_level = if matches.get_flag("verbose") {
+        "debug"
+    } else {
+        "info"
+    };
+
+    let stdin = std::io::stdin();
+    let tracing_registry = tracing_subscriber::registry()
+        .with(ErrorLayer::default())
+        .with(tracing_subscriber::EnvFilter::new(log_level));
+
+    if stdin.is_terminal() {
+        tracing_registry
+            .with(tracing_subscriber::fmt::layer().pretty())
+            .init();
+    } else {
+        tracing_registry
+            .with(tracing_subscriber::fmt::layer().json().flatten_event(true))
+            .init();
+    }
+
+    let config = setup_config(matches)?;
+
+    return root_cmd(matches, config).await;
 }
 
 fn setup_config(matches: &clap::ArgMatches) -> Result<Config> {
@@ -91,6 +102,7 @@ pub async fn root_cmd(matches: &clap::ArgMatches, config: Config) -> Result<()> 
     match matches.subcommand() {
         Some((hello_world::CMD_NAME, sub_match)) => hello_world::run(config, sub_match).await,
         Some((serve::CMD_NAME, sub_match)) => serve::run(config, sub_match).await,
+        Some((embeddings::CMD_NAME, sub_match)) => embeddings::run(config, sub_match).await,
         None => Ok(()),
         _ => unreachable!("match arms should cover all the possible cases"),
     }
