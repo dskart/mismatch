@@ -1,10 +1,12 @@
 <form hx-post="/components/submit" hx-ext="json-enc" hx-target="this" hx-swap="outerHTML">
   <div class="flex flex-col space-y-4 p-4 max-w-md mx-auto">
-    <input type="text" name="word1" placeholder="First word"
-      class="input input-bordered input-primary w-full max-w-xs mx-auto">
-    <input type="text" name="word2" placeholder="Second word"
-      class="input input-bordered input-primary w-full max-w-xs mx-auto">
-    <button type="submit" class="btn btn-primary max-w-xs mx-auto">
+    <input type="text" name="word1" placeholder="First word" maxlength="20"
+      class="input input-bordered input-primary w-full max-w-xs mx-auto" oninput="validateInput(this)"
+      value="{{ word1 if word1 is defined else '' }}">
+    <input type="text" name="word2" placeholder="Second word" maxlength="20"
+      class="input input-bordered input-primary w-full max-w-xs mx-auto" oninput="validateInput(this)"
+      value="{{ word2 if word2 is defined else '' }}">
+    <button type="submit" id="submitBtn" class="btn btn-primary max-w-xs mx-auto" disabled>
       Submit Words
     </button>
     {% if score is defined %}
@@ -16,3 +18,25 @@
     {% endif %}
   </div>
 </form>
+
+<script>
+  function validateInput(input) {
+    const value = input.value;
+    const isValid = /^[A-Za-z]*$/.test(value);
+
+    if (!isValid || value.length > 20) {
+      input.style.borderColor = 'red';
+      input.style.color = 'red';
+    } else {
+      input.style.borderColor = '';
+      input.style.color = '';
+    }
+
+    const word1 = document.querySelector('input[name="word1"]').value;
+    const word2 = document.querySelector('input[name="word2"]').value;
+    const isWord1Valid = /^[A-Za-z]*$/.test(word1);
+    const isWord2Valid = /^[A-Za-z]*$/.test(word2);
+
+    document.getElementById('submitBtn').disabled = !(word1 && word2 && isWord1Valid && isWord2Valid);
+  }
+</script>

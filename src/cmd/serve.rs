@@ -1,5 +1,7 @@
-use crate::api::Api;
+use std::sync::Arc;
+
 use crate::cmd::Config;
+use crate::{api::Api, app::App};
 use anyhow::{Ok, Result};
 use clap::{self, value_parser, Arg};
 use listenfd::ListenFd;
@@ -19,8 +21,10 @@ pub fn cmd() -> clap::Command {
     clap::Command::new(CMD_NAME).arg(port_arg)
 }
 
-pub async fn run(_config: Config, args: &clap::ArgMatches) -> Result<()> {
-    let api = Api::new();
+pub async fn run(config: Config, args: &clap::ArgMatches) -> Result<()> {
+    let app = Arc::new(App::new(config.app)?);
+    let api = Api::new(config.api, app);
+
     let router = api.get_router()?;
     let port = args.get_one::<usize>("port").expect("port is required");
 

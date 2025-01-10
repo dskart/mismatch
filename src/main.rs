@@ -1,4 +1,5 @@
 mod api;
+mod app;
 mod cmd;
 
 #[tokio::main]

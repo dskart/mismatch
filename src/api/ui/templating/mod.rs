@@ -21,4 +21,10 @@ impl TemplateState {
             .map_err(|_| anyhow::anyhow!("failed to add template {}", name))?;
         Ok(())
     }
+
+    pub fn get_template(&self, name: &'static str) -> anyhow::Result<minijinja::Template> {
+        self.templates
+            .get_template(name)
+            .map_err(|e| anyhow::anyhow!("failed to get template {}: {}", name, e))
+    }
 }

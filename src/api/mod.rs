@@ -1,23 +1,37 @@
+use std::sync::Arc;
+
 use anyhow::{Ok, Result};
 use axum::{response::Json, routing};
 use tower_http::trace::TraceLayer;
 
 pub mod config;
 pub use config::Config;
+
+use crate::app;
+
 mod ui;
 
-#[derive(Clone)]
-pub struct Api {}
+#[derive(Debug)]
+pub struct Api {
+    app: Arc<app::App>,
+}
+
+struct ApiState {
+    app: Arc<app::App>,
+}
 
 impl Api {
-    pub fn new() -> Self {
-        Api {}
+    pub fn new(_cfg: Config, app: Arc<app::App>) -> Self {
+        Api { app: app.clone() }
     }
 
     pub fn get_router(&self) -> Result<axum::Router> {
+        let api_state = Arc::new(ApiState {
+            app: self.app.clone(),
+        });
         let router = axum::Router::new()
             .route("/healthz", routing::get(healthz_handler))
-            .nest("/", ui::get_router()?)
+            .nest("/", ui::get_router(api_state)?)
             .layer(TraceLayer::new_for_http());
         Ok(router)
     }
@@ -36,6 +50,8 @@ async fn healthz_handler() -> Json<HealthzResponse> {
 
 #[cfg(test)]
 mod tests {
+    use crate::app;
+
     use super::*;
     use axum::{
         body::Body,
@@ -46,7 +62,8 @@ mod tests {
 
     #[tokio::test]
     async fn healthz() {
-        let api = Api::new();
+        let app = Arc::new(app::App::new(app::Config::default()).unwrap());
+        let api = Api::new(Config::default(), app);
         let router = api.get_router().expect("failed to get router");
 
         let response = router
@@ -75,7 +92,8 @@ mod tests {
 
     #[tokio::test]
     async fn not_found() {
-        let api = Api::new();
+        let app = Arc::new(app::App::new(app::Config::default()).unwrap());
+        let api = Api::new(Config::default(), app);
         let router = api.get_router().unwrap();
 
         let response = router
