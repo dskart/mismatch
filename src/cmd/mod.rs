@@ -67,7 +67,7 @@ pub async fn set_up_and_exec(matches: &clap::ArgMatches) -> Result<()> {
 
     let config = setup_config(matches)?;
 
-    return root_cmd(matches, config).await;
+    root_cmd(matches, config).await
 }
 
 fn setup_config(matches: &clap::ArgMatches) -> Result<Config> {

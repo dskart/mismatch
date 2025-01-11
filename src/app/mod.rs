@@ -34,7 +34,7 @@ impl App {
 }
 
 fn init_ort(model: String) -> anyhow::Result<(OrtSession, Tokenizer)> {
-    ort::init().with_name("missmatch").commit()?;
+    ort::init().with_name("mismatch").commit()?;
     let ort_session = OrtSession::builder()?
         .with_optimization_level(GraphOptimizationLevel::Level1)?
         .with_intra_threads(1)?
