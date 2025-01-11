@@ -16,14 +16,45 @@
       Score: {{ score }}
     </div>
     {% endif %}
+    <div id="highScoreDisplay" class="max-w-xs mx-auto text-center mt-4">
+      <h3 class="font-bold text-center">High Score</h3>
+      <p id="highScoreText"></p>
+      <p id="highScoreWords" class="text-sm"></p>
+    </div>
   </div>
 </form>
-
 <script>
+  // Initialize high score tracking
+  function getHighScore() {
+    const storedScore = localStorage.getItem('highScore');
+    if (storedScore) {
+      return JSON.parse(storedScore);
+    }
+    return { score: 0, word1: '', word2: '' };
+  }
+
+  function updateHighScore(newScore, word1, word2) {
+    const currentHigh = getHighScore();
+    if (newScore > currentHigh.score) {
+      const newHighScore = { score: newScore, word1: word1, word2: word2 };
+      localStorage.setItem('highScore', JSON.stringify(newHighScore));
+      displayHighScore();
+    }
+  }
+
+  function displayHighScore() {
+    const highScore = getHighScore();
+    const highScoreText = document.getElementById('highScoreText');
+    const highScoreWords = document.getElementById('highScoreWords');
+    if (highScoreText && highScoreWords) {
+      highScoreText.textContent = `High Score: ${highScore.score}`;
+      highScoreWords.textContent = `Words: ${highScore.word1}, ${highScore.word2}`;
+    }
+  }
+
   function validateInput(input) {
     const value = input.value;
     const isValid = /^[A-Za-z]*$/.test(value);
-
     if (!isValid || value.length > 20) {
       input.style.borderColor = 'red';
       input.style.color = 'red';
@@ -31,12 +62,18 @@
       input.style.borderColor = '';
       input.style.color = '';
     }
-
     const word1 = document.querySelector('input[name="word1"]').value;
     const word2 = document.querySelector('input[name="word2"]').value;
     const isWord1Valid = /^[A-Za-z]*$/.test(word1);
     const isWord2Valid = /^[A-Za-z]*$/.test(word2);
-
     document.getElementById('submitBtn').disabled = !(word1 && word2 && isWord1Valid && isWord2Valid);
   }
+
+  // Check and update high score when new score is displayed
+  {% if score is defined %}
+  updateHighScore({{ score }}, "{{ word1 }}", "{{ word2 }}");
+  {% endif %}
+
+  // Display high score on page load
+  displayHighScore();
 </script>

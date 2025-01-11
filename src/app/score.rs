@@ -4,7 +4,7 @@ use ort::{value::Tensor, Error};
 use crate::app::App;
 
 impl App {
-    pub fn get_score(&self, word1: String, word2: String) -> anyhow::Result<f32> {
+    pub fn get_score(&self, word1: String, word2: String) -> anyhow::Result<i32> {
         if self.tokenizer.is_none() || self.ort_session.is_none() {
             anyhow::bail!("Tokenizer or ONNX session not initialized");
         }
@@ -53,12 +53,21 @@ impl App {
             .into_dimensionality::<Ix2>()?;
 
         // Since there is only one dimension, just compute dot product
-        let query = embeddings.index_axis(Axis(0), 0);
-        let other = embeddings.index_axis(Axis(0), 1);
+        let word1_embeddings = embeddings.index_axis(Axis(0), 0);
+        let word2_embeddings = embeddings.index_axis(Axis(0), 1);
 
-        // Calculate cosine similarity
-        let dot_product: f32 = query.iter().zip(other.iter()).map(|(a, b)| a * b).sum();
+        // Calculate cosine similarity and convert to 0-1000 range
+        let dot_product: f32 = word1_embeddings
+            .iter()
+            .zip(word2_embeddings.iter())
+            .map(|(a, b)| a * b)
+            .sum();
+        let norm1: f32 = word1_embeddings.iter().map(|a| a * a).sum::<f32>().sqrt();
+        let norm2: f32 = word2_embeddings.iter().map(|a| a * a).sum::<f32>().sqrt();
+        let cosine_similarity = dot_product / (norm1 * norm2);
+        // Convert from -1..1 to 0..1000, but invert the scale
+        let score = ((1.0 - ((cosine_similarity + 1.0) / 2.0)) * 1000.0).round() as i32;
 
-        anyhow::Ok(dot_product)
+        anyhow::Ok(score)
     }
 }
