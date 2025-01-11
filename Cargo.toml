@@ -23,6 +23,8 @@ tracing = "0.1.41"
 tracing-error = "0.2.1"
 tracing-subscriber = { version = "0.3.19", features = ["env-filter", "json"] }
 ort = "=2.0.0-rc.9"
+rand = "0.8.5"
+base64 = "0.22.1"
 
 
 [features]

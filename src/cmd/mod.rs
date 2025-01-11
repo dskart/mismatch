@@ -13,9 +13,9 @@ mod hello_world;
 mod serve;
 
 pub async fn execute() -> i32 {
-    let matches = clap::Command::new("my-service")
+    let matches = clap::Command::new("mismatch")
         .arg_required_else_help(true)
-        .about("TODO")
+        .about("mismatch game")
         .version(env!("CARGO_PKG_VERSION"))
         .arg(
             Arg::new("verbose")
@@ -92,7 +92,7 @@ fn setup_config(matches: &clap::ArgMatches) -> Result<Config> {
         Config::default()
     };
 
-    config.load_from_env("TODO__")?;
+    config.load_from_env("MISMATCH__")?;
     config.validate()?;
 
     Ok(config)

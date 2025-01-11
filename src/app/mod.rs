@@ -3,6 +3,7 @@ use model::ModelType;
 use ort::session::{builder::GraphOptimizationLevel, Session as OrtSession};
 use std::path::Path;
 use tokenizers::Tokenizer;
+use tracing::warn;
 
 pub mod config;
 pub use config::Config;
@@ -19,6 +20,7 @@ pub struct App {
 impl App {
     pub fn new(cfg: Config) -> anyhow::Result<Self> {
         let (ort_session, tokenizer) = if let ModelType::None = cfg.model {
+            warn!("No model specified, skipping model initialization");
             (None, None)
         } else {
             let (ort_session, tokenizers) = init_ort(cfg.model.to_string())?;

@@ -7,10 +7,7 @@ mod pages;
 mod templating;
 
 pub fn get_router(api_state: Arc<api::ApiState>) -> anyhow::Result<axum::Router> {
-    let public_path = Path::new(file!())
-        .parent()
-        .expect("failed to get current dir")
-        .join("public");
+    let public_path = Path::new(env!("CARGO_MANIFEST_DIR")).join("src/api/ui/public");
 
     let mut template_state = templating::TemplateState::new()?;
     components::add_templates(&mut template_state)?;

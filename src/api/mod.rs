@@ -1,14 +1,16 @@
-use std::sync::Arc;
-
+use crate::app;
 use anyhow::{Ok, Result};
-use axum::{response::Json, routing};
+use axum::response::Response;
+use axum::{body::Body, http::Request, response::Json, routing};
+use base64::{engine::general_purpose::STANDARD, Engine};
+use rand::RngCore;
+use std::{sync::Arc, time::Duration};
 use tower_http::trace::TraceLayer;
+use tracing::Span;
 
 pub mod config;
 pub use config::Config;
-
-use crate::app;
-
+mod error;
 mod ui;
 
 #[derive(Debug)]
@@ -29,10 +31,21 @@ impl Api {
         let api_state = Arc::new(ApiState {
             app: self.app.clone(),
         });
+
         let router = axum::Router::new()
             .route("/healthz", routing::get(healthz_handler))
             .nest("/", ui::get_router(api_state)?)
-            .layer(TraceLayer::new_for_http());
+            .layer(                    TraceLayer::new_for_http()
+                        .make_span_with(|request: &Request<Body>| {
+                            let mut random_bytes = [0u8; 15];
+                            rand::thread_rng().fill_bytes(&mut random_bytes);
+                            let request_id = STANDARD.encode(random_bytes);
+                            tracing::info_span!("request", method=%request.method(), uri=%request.uri(), request_id=%request_id)
+                        })
+                        .on_response(|response: &Response, latency: Duration, _span: &Span| {
+                            let status = response.status();
+                            tracing::info!(?status, ?latency)
+                        }));
         Ok(router)
     }
 }

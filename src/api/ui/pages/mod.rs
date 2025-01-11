@@ -1,9 +1,10 @@
+use crate::api::error::ApiError;
 use crate::api::ui::templating;
 use crate::api::ui::UiState;
-use axum::{extract::State, http::StatusCode, response::Html, routing};
+use axum::{extract::State, response::Html, routing};
 use minijinja::context;
 use std::sync::Arc;
-use tracing::error;
+use tracing::info;
 
 use crate::api::ui::PageRegistration;
 
@@ -32,12 +33,9 @@ impl PageRegistration for HomePage {
     }
 }
 
-async fn handle_index(State(state): State<Arc<UiState>>) -> Result<Html<String>, StatusCode> {
-    let template = state.template_state.get_template("index.html.j2").unwrap();
-    let rendered = template.render(context!()).map_err(|e| {
-        error!("Failed to render template: {}", e);
-        StatusCode::INTERNAL_SERVER_ERROR
-    })?;
+async fn handle_index(State(state): State<Arc<UiState>>) -> Result<Html<String>, ApiError> {
+    let template = state.template_state.get_template("index.html.j2")?;
+    let rendered = template.render(context!())?;
 
     Ok(Html(rendered))
 }

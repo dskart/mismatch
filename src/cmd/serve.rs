@@ -36,7 +36,7 @@ pub async fn run(config: Config, args: &clap::ArgMatches) -> Result<()> {
             TcpListener::from_std(listener).unwrap()
         }
         // otherwise fall back to local listening
-        None => TcpListener::bind(format!("127.0.0.1:{}", port)).await?,
+        None => TcpListener::bind(format!("0.0.0.0:{}", port)).await?,
     };
 
     info!(
