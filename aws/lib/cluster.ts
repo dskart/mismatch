@@ -16,6 +16,7 @@ interface ClusterProps {
     readonly minCapacity: number;
     readonly maxCapacity: number;
     readonly logGroup: logs.LogGroup;
+    readonly securityGroup: ec2.ISecurityGroup;
     readonly hardwareType: ecs.AmiHardwareType;
     readonly subnetType: ec2.SubnetType;
     readonly spotPrice?: string;
@@ -33,9 +34,16 @@ export class Cluster extends Construct {
         const clusterName = props.clusterName;
         const autoScalingGroupName = props.clusterName + '-' + id + '-' + 'ASG';
 
-        this.ecsCluster = new ecs.Cluster(this, 'Cluster', { vpc: props.vpc, clusterName });
+        this.ecsCluster = new ecs.Cluster(this, 'Cluster', {
+            vpc: props.vpc,
+            clusterName,
+            defaultCloudMapNamespace: {
+                name: clusterName,
+            },
+        });
         const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'AutoscalingGroup', {
             autoScalingGroupName,
+            securityGroup: props.securityGroup,
             vpc: props.vpc,
             signals: autoscaling.Signals.waitForAll({
                 timeout: Duration.minutes(10),

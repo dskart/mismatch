@@ -66,13 +66,17 @@ if [ -z "$IMAGE_NAME" ] || [ -z "$ECR_REPO_URI" ]; then
     usage
 fi
 
-# Set version to git commit hash if not provided
-if [ -z "$VERSION" ]; then
-    VERSION=$(get_git_hash)
+GIT_HASH=$(get_git_hash)
+
+if [ "$VERSION" ]; then
+    TAGS=("latest" "$VERSION" "$GIT_HASH")
+else
+    TAGS=("latest" "$GIT_HASH")
 fi
 
-# Create tag arguments for both version and latest
-TAG_ARGS="--tag ${ECR_REPO_URI}/${IMAGE_NAME}:${VERSION} --tag ${ECR_REPO_URI}/${IMAGE_NAME}:latest"
+for tag in "${TAGS[@]}"; do
+    TAG_ARGS="--tag ${ECR_REPO_URI}/${IMAGE_NAME}:${tag} $TAG_ARGS"
+done
 
 # Check if docker is installed
 if ! command -v docker &> /dev/null; then
@@ -112,7 +116,7 @@ docker buildx use multiarch-builder
 
 # Start the build process
 log "🚀" "Starting multi-architecture build for $IMAGE_NAME"
-log "🏷️" "Tags: ${VERSION}, latest"
+log "🏷️" "Tags: ${TAGS[*]}"
 log "💻" "Building for platforms: $PLATFORMS"
 log "📄" "Using Dockerfile: $DOCKERFILE"
 log "📁" "Build context: $BUILD_CONTEXT"
@@ -128,7 +132,7 @@ if docker buildx build \
     echo
     log "✅" "Successfully built and pushed multi-architecture image"
     log "📦" "Image: $IMAGE_NAME"
-    log "🏷️" "Tags: ${VERSION}, latest"
+    log "🏷️" "Tags: ${TAGS[*]}"
     log "🎯" "Platforms: $PLATFORMS"
 else
     echo

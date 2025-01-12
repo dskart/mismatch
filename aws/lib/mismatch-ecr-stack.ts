@@ -12,7 +12,7 @@ export class MismatchEcrStack extends cdk.Stack {
             lifecycleRules: [
                 {
                     description: 'Keep only recent images',
-                    maxImageCount: 5,
+                    maxImageCount: 6,
                     rulePriority: 1,
                 },
             ],
