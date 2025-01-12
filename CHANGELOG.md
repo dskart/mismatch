@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/dskart/mismatch/compare/v0.2.0...v0.3.0) (2025-01-12)
+
+
+### Features
+
+* added git tagging ([9d45aba](https://github.com/dskart/mismatch/commit/9d45aba6e0064e418a88515248d8879bbf44c09b))
+
 ## [0.2.0](https://github.com/dskart/mismatch/compare/v0.1.0...v0.2.0) (2025-01-12)
 
 
