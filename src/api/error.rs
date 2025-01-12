@@ -2,6 +2,7 @@ use axum::{
     http::StatusCode,
     response::{IntoResponse, Response},
 };
+use tracing::error;
 
 #[allow(dead_code)]
 pub struct ApiError {
@@ -26,9 +27,10 @@ where
     E: Into<anyhow::Error>,
 {
     fn from(err: E) -> Self {
+        error!("{:?}", err.into());
         ApiError {
             code: StatusCode::INTERNAL_SERVER_ERROR,
-            message: err.into().to_string(),
+            message: "Internal server error".to_string(),
         }
     }
 }

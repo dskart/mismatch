@@ -13,9 +13,11 @@ mod hello_world;
 mod serve;
 
 pub async fn execute() -> i32 {
+    let banner = include_str!("banner.txt");
+    println!("{}", banner);
+
     let matches = clap::Command::new("mismatch")
         .arg_required_else_help(true)
-        .about("mismatch game")
         .version(env!("CARGO_PKG_VERSION"))
         .arg(
             Arg::new("verbose")

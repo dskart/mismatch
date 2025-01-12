@@ -4,7 +4,6 @@ use crate::api::ui::UiState;
 use axum::{extract::State, response::Html, routing};
 use minijinja::context;
 use std::sync::Arc;
-use tracing::info;
 
 use crate::api::ui::PageRegistration;
 
