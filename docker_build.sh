@@ -46,6 +46,16 @@ get_git_hash() {
     fi
 }
 
+get_git_tag() {
+    # Check if current commit has a tag
+    local git_tag=$(git describe --exact-match --tags HEAD 2>/dev/null)
+    if [ -n "$git_tag" ]; then
+        echo "$git_tag"
+    else
+        echo ""
+    fi
+}
+
 # Parse command line arguments
 while getopts "i:r:v:p:f:c:a:" opt; do
     case $opt in
@@ -67,11 +77,15 @@ if [ -z "$IMAGE_NAME" ] || [ -z "$ECR_REPO_URI" ]; then
 fi
 
 GIT_HASH=$(get_git_hash)
+GIT_TAG=$(get_git_tag)
+TAGS=("latest" "$GIT_HASH")
 
 if [ "$VERSION" ]; then
-    TAGS=("latest" "$VERSION" "$GIT_HASH")
-else
-    TAGS=("latest" "$GIT_HASH")
+    TAGS+=("$VERSION")
+fi
+
+if [ "$GIT_TAG" ]; then
+    TAGS+=("$GIT_TAG")
 fi
 
 for tag in "${TAGS[@]}"; do
