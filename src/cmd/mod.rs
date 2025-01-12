@@ -8,7 +8,6 @@ use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 mod config;
 use config::Config;
 
-mod embeddings;
 mod hello_world;
 mod serve;
 
@@ -34,7 +33,6 @@ pub async fn execute() -> i32 {
         )
         .subcommand(hello_world::cmd())
         .subcommand(serve::cmd())
-        .subcommand(embeddings::cmd())
         .get_matches();
 
     // setup logger
@@ -104,7 +102,6 @@ pub async fn root_cmd(matches: &clap::ArgMatches, config: Config) -> Result<()> 
     match matches.subcommand() {
         Some((hello_world::CMD_NAME, sub_match)) => hello_world::run(config, sub_match).await,
         Some((serve::CMD_NAME, sub_match)) => serve::run(config, sub_match).await,
-        Some((embeddings::CMD_NAME, sub_match)) => embeddings::run(config, sub_match).await,
         None => Ok(()),
         _ => unreachable!("match arms should cover all the possible cases"),
     }
