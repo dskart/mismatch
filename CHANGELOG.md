@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/dskart/mismatch/compare/v0.3.0...v0.4.0) (2025-01-12)
+
+
+### Features
+
+* updated deploy script and task def ([ff064cf](https://github.com/dskart/mismatch/commit/ff064cfdc06728dc7580f74c89874bf206f64b15))
+
 ## [0.3.0](https://github.com/dskart/mismatch/compare/v0.2.0...v0.3.0) (2025-01-12)
 
 
