@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.0](https://github.com/dskart/mismatch/compare/v0.1.0...v0.2.0) (2025-01-12)
+
+
+### Features
+
+* added version and emoji favicon ([8b8c5ee](https://github.com/dskart/mismatch/commit/8b8c5ee5ec1834ebf53867ed63f2f122e22587a3))
+* updated theme ([b91b3e2](https://github.com/dskart/mismatch/commit/b91b3e2bec75b7ce8d0171025192e1823941a845))
+
 ## 0.1.0 (2025-01-12)
 
 
