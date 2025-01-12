@@ -93,7 +93,7 @@ export class MismatchStack extends cdk.Stack {
             containerName: 'mismatch-server',
             command: ['serve', '--port', '8080'],
             portMappings: [{ containerPort: 8080, hostPort: 0 }],
-            memoryLimitMiB: 900,
+            memoryReservationMiB: 900 / 2,
             cpu: 2048 / 2,
             logging: ecs.LogDriver.awsLogs({ logGroup: logGroup, streamPrefix: Aws.STACK_NAME }),
             environment,

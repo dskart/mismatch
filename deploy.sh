@@ -20,12 +20,14 @@ error_log() {
     log "❌" "$1"
 }
 
-get_git_hash() {
-    if git rev-parse --git-dir > /dev/null 2>&1; then
-        git rev-parse --short HEAD
+get_version_identifier() {
+    # Check if current commit has a tag
+    local git_tag=$(git describe --exact-match --tags HEAD 2>/dev/null)
+    if [ -n "$git_tag" ]; then
+        echo "$git_tag"
     else
-        log "⚠️" "Not a git repository, using 'latest' as version"
-        echo "latest"
+        # Fallback to commit hash
+        git rev-parse --short HEAD
     fi
 }
 
@@ -37,17 +39,33 @@ while getopts "v:" opt; do
 done
 
 if [ -z "$VERSION" ]; then
-    VERSION=$(get_git_hash)
+    VERSION=$(get_version_identifier)
 fi
 
-
 cd ./aws
-nvm use
+
+# Source NVM if available
+if [ -f "$HOME/.nvm/nvm.sh" ]; then
+    . "$HOME/.nvm/nvm.sh"
+elif [ -f "/usr/local/opt/nvm/nvm.sh" ]; then
+    . "/usr/local/opt/nvm/nvm.sh"
+else
+    error_log "NVM not found. Please install NVM first."
+    exit 1
+fi
+
+# Try to use project's Node.js version or fallback to default
+if [ -f ".nvmrc" ]; then
+    nvm use || nvm use default
+else
+    log "ℹ️" "No .nvmrc found, using default Node version"
+    nvm use default
+fi
 
 # Deploy using AWS CDK
 log "🚀" "Deploying with AWS CDK..."
 log "🏷️" "Version: ${VERSION}"
-if cdk deploy MismatchStack --parameters ImageTag=${VERSION}
+if cdk deploy MismatchStack --parameters ImageTag=${VERSION}; then
     echo
     log "✅" "Deployment complete"
 else 
