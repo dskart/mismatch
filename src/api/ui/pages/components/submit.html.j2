@@ -30,25 +30,34 @@
     if (storedScore) {
       return JSON.parse(storedScore);
     }
-    return { score: 0, word1: '', word2: '' };
+    return null
   }
 
   function updateHighScore(newScore, word1, word2) {
     const currentHigh = getHighScore();
-    if (newScore > currentHigh.score) {
-      const newHighScore = { score: newScore, word1: word1, word2: word2 };
-      localStorage.setItem('highScore', JSON.stringify(newHighScore));
-      displayHighScore();
+    let newHighScore = { score: newScore, word1: word1, word2: word2 };
+
+    if (currentHigh && currentHigh.score > newScore) {
+      newHighScore = { score: currentHigh.score, word1: currentHigh.word1, word2: currentHigh.word2 };
     }
+
+    localStorage.setItem('highScore', JSON.stringify(newHighScore));
+    displayHighScore();
   }
 
   function displayHighScore() {
     const highScore = getHighScore();
     const highScoreText = document.getElementById('highScoreText');
     const highScoreWords = document.getElementById('highScoreWords');
-    if (highScoreText && highScoreWords) {
-      highScoreText.textContent = `High Score: ${highScore.score}`;
-      highScoreWords.textContent = `Words: ${highScore.word1}, ${highScore.word2}`;
+    const highScoreDisplay = document.getElementById('highScoreDisplay');
+    if (highScore) {
+      if (highScoreText && highScoreWords) {
+        highScoreText.textContent = `High Score: ${highScore.score}`;
+        highScoreWords.textContent = `Words: ${highScore.word1}, ${highScore.word2}`;
+        highScoreDisplay.style.display = 'block';
+      }
+    } else {
+      highScoreDisplay.style.display = 'none';
     }
   }
 

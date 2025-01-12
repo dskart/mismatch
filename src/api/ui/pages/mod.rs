@@ -34,7 +34,9 @@ impl PageRegistration for HomePage {
 
 async fn handle_index(State(state): State<Arc<UiState>>) -> Result<Html<String>, ApiError> {
     let template = state.template_state.get_template("index.html.j2")?;
-    let rendered = template.render(context!())?;
+    let rendered = template.render(context!(
+        version => env!("CARGO_PKG_VERSION"),
+    ))?;
 
     Ok(Html(rendered))
 }
