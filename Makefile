@@ -24,3 +24,10 @@ models:
 	@wget https://huggingface.co/minishlab/potion-base-8M/resolve/main/onnx/model.onnx?download=true -O models/potion-base-8M/potion-base-8M.onnx
 	@wget https://huggingface.co/minishlab/potion-base-8M/resolve/main/tokenizer.json -O models/potion-base-8M/tokenizer.json
 	@echo "✨ Models generated!"
+
+.PHONE: deploy
+deploy:
+	@echo "🚀 Deploying ..."
+	@./docker-deploy.sh
+	@./deploy.sh
+	@echo "✨ Deployment completed!"
