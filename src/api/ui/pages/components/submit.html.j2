@@ -1,10 +1,10 @@
 <form hx-post="/components/submit" hx-ext="json-enc" hx-target="this" hx-swap="outerHTML">
   <div class="flex flex-col space-y-4 p-4 max-w-md mx-auto">
     <input type="text" name="word1" placeholder="First word" maxlength="20"
-      class="input input-bordered input-primary w-full max-w-xs mx-auto" oninput="validateInput(this)"
+      class="input input-bordered w-full max-w-xs mx-auto" oninput="validateInput(this)"
       value="{{ word1 if word1 is defined else '' }}">
     <input type="text" name="word2" placeholder="Second word" maxlength="20"
-      class="input input-bordered input-primary w-full max-w-xs mx-auto" oninput="validateInput(this)"
+      class="input input-bordered w-full max-w-xs mx-auto" oninput="validateInput(this)"
       value="{{ word2 if word2 is defined else '' }}">
     <button type="submit" id="submitBtn" class="btn btn-primary max-w-xs mx-auto" disabled>
       Submit Words
