@@ -29,6 +29,6 @@ models:
 .PHONE: deploy
 deploy:
 	@echo "🚀 Deploying ..."
-	@./docker-deploy.sh
+	@./docker_build.sh
 	@./deploy.sh
 	@echo "✨ Deployment completed!"
