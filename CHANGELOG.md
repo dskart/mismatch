@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.1](https://github.com/dskart/mismatch/compare/v0.6.0...v0.6.1) (2025-01-13)
+
+
+### Bug Fixes
+
+* fix header ([1de702e](https://github.com/dskart/mismatch/commit/1de702ed408cd40879fb89e7baeab13dbff6ebdf))
+
 ## [0.6.0](https://github.com/dskart/mismatch/compare/v0.5.1...v0.6.0) (2025-01-13)
 
 
