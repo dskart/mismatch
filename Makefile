@@ -14,7 +14,8 @@ setup-ui:
 serve:
 	@echo "🌐 Starting development server..."
 	@echo "📡 Browser-Sync listening on http://localhost:8080..."
-	@npx browser-sync start --logLevel "silent" --proxy "localhost:3000" --port 8080 --files "src/" --no-open --no-ui & \
+	@trap 'kill $$(jobs -p)' EXIT; \
+	npx browser-sync start --logLevel "silent" --proxy "localhost:3000" --port 8080 --files "src/" --no-open --no-ui & \
 	systemfd --no-pid -s http::3000 -- cargo watch -x 'run serve'
 
 .PHONY: models
