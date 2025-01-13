@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.5.0](https://github.com/dskart/mismatch/compare/v0.4.0...v0.5.0) (2025-01-13)
+
+
+### Features
+
+* added high score handling ([4d4df5f](https://github.com/dskart/mismatch/commit/4d4df5f9310bbfd13b5b3d86a9146dbb8cdc4d7b))
+* added make deploy ([7712e69](https://github.com/dskart/mismatch/commit/7712e6948ae02dd6431a00df0b5bc8b0202112e7))
+
 ## [0.4.0](https://github.com/dskart/mismatch/compare/v0.3.0...v0.4.0) (2025-01-12)
 
 
