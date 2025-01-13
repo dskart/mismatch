@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.6.0](https://github.com/dskart/mismatch/compare/v0.5.1...v0.6.0) (2025-01-13)
+
+
+### Features
+
+* added tooltip ([3f6fd5a](https://github.com/dskart/mismatch/commit/3f6fd5a8d3d076b10ff05e54c3dc0b29e6ef97a1))
+* update html metadata ([322feb7](https://github.com/dskart/mismatch/commit/322feb7d17636919f8d5375f3d2d488c1e22d9ce))
+* updated tooltip ([c96eeb4](https://github.com/dskart/mismatch/commit/c96eeb4db141e959d39efc45cc244c16d23dbaf7))
+
 ## [0.5.1](https://github.com/dskart/mismatch/compare/v0.5.0...v0.5.1) (2025-01-13)
 
 
