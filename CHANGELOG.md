@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.1](https://github.com/dskart/mismatch/compare/v0.5.0...v0.5.1) (2025-01-13)
+
+
+### Bug Fixes
+
+* fix make deploy ([36d7ca3](https://github.com/dskart/mismatch/commit/36d7ca3b0c2f841f3b43c0fad885d3496105ff04))
+
 ## [0.5.0](https://github.com/dskart/mismatch/compare/v0.4.0...v0.5.0) (2025-01-13)
 
 
