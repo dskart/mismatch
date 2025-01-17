@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.7.0](https://github.com/dskart/mismatch/compare/v0.6.1...v0.7.0) (2025-01-17)
+
+
+### Features
+
+* moved ui and updated makefile ([026e008](https://github.com/dskart/mismatch/commit/026e008ee944452731d646c2568a4f398a295895))
+
+
+### Bug Fixes
+
+* fix phone data tip ([415ddd7](https://github.com/dskart/mismatch/commit/415ddd7d4046ce1bc804e54cac44196d01c8e745))
+
 ## [0.6.1](https://github.com/dskart/mismatch/compare/v0.6.0...v0.6.1) (2025-01-13)
 
 
