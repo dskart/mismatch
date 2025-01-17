@@ -1,5 +1,3 @@
-htmx.min.js
-json-enc.js
-output.css
+public/static/
 node_modules/
 package-lock.json

@@ -12,7 +12,13 @@ pub fn get_router(ui_state: Arc<UiState>) -> anyhow::Result<axum::Router> {
 }
 
 pub fn add_templates(template_state: &mut templating::TemplateState) -> anyhow::Result<()> {
-    template_state.add_template("components/submit.html.j2", include_str!("submit.html.j2"))?;
+    template_state.add_template("components/content.html.j2", include_str!("content.html.j2"))?;
+    template_state.add_template("components/high_score.html.j2", include_str!("high_score.html.j2"))?;
+    template_state.add_template(
+        "components/score_display.html.j2",
+        include_str!("score_display.html.j2"),
+    )?;
+    template_state.add_template("components/word_input.html.j2", include_str!("word_input.html.j2"))?;
     anyhow::Ok(())
 }
 
@@ -38,7 +44,7 @@ async fn handle_post_submit(
         ));
     }
 
-    let template = state.template_state.get_template("components/submit.html.j2")?;
+    let template = state.template_state.get_template("components/content.html.j2")?;
 
     let score = state.app.get_score(req.word1.clone(), req.word2.clone())?;
 

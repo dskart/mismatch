@@ -1,0 +1,11 @@
+<input type="text" name="word1" placeholder="First word" maxlength="20"
+  class="input input-bordered w-full max-w-xs mx-auto" oninput="validateInput(this)"
+  value="{{ word1 if word1 is defined else '' }}">
+
+<input type="text" name="word2" placeholder="Second word" maxlength="20"
+  class="input input-bordered w-full max-w-xs mx-auto" oninput="validateInput(this)"
+  value="{{ word2 if word2 is defined else '' }}">
+
+<button type="submit" id="submitBtn" class="btn btn-primary max-w-xs mx-auto" disabled>
+  Submit Words
+</button>

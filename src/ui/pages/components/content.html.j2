@@ -1,0 +1,13 @@
+<form hx-post="/components/submit" hx-ext="json-enc" hx-target="this" hx-swap="outerHTML"
+  class="flex flex-col space-y-4 p-4 max-w-md mx-auto">
+
+  {% include "components/word_input.html.j2" with context %}
+  {% include "components/score_display.html.j2" with context %}
+  {% include "components/high_score.html.j2" with context %}
+  <script>
+    {% if score is defined %}
+    window.scripts.updateHighScore({{ score }}, "{{ word1 }}", "{{ word2 }}");
+    {% endif %}
+    window.scripts.displayHighScore();
+  </script>
+</form>
