@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.0](https://github.com/dskart/mismatch/compare/v0.7.0...v0.8.0) (2025-01-17)
+
+
+### Features
+
+* cleanup ui ([9aa7154](https://github.com/dskart/mismatch/commit/9aa71541a1a1b034265313a99d1a5f1779be3336))
+
 ## [0.7.0](https://github.com/dskart/mismatch/compare/v0.6.1...v0.7.0) (2025-01-17)
 
 
