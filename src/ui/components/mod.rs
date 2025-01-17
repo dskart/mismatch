@@ -1,4 +1,4 @@
-use crate::api::ui::templating;
+use crate::ui::templating;
 
 macro_rules! template_key {
     ($name:expr) => {
@@ -7,9 +7,6 @@ macro_rules! template_key {
 }
 
 pub fn add_templates(template_state: &mut templating::TemplateState) -> anyhow::Result<()> {
-    template_state.add_template(
-        template_key!("header.html.j2"),
-        include_str!("header.html.j2"),
-    )?;
+    template_state.add_template(template_key!("header.html.j2"), include_str!("header.html.j2"))?;
     Ok(())
 }

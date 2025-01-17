@@ -1,13 +1,13 @@
 .PHONY: ui
 ui:
 	@echo "🚀 Building UI components..."
-	@cd src/api/ui && make ui
+	@cd src/ui && make ui
 	@echo "✨ UI build completed!"
 
 .PHONY: setup-ui
 setup-ui:
 	@echo "🔧 Setting up UI environment..."
-	@cd src/api/ui && make setup-ui
+	@cd src/ui && make setup-ui
 	@echo "✅ UI setup completed!"
 
 .PHONY: serve
@@ -26,9 +26,30 @@ models:
 	@wget https://huggingface.co/minishlab/potion-base-8M/resolve/main/tokenizer.json -O models/potion-base-8M/tokenizer.json
 	@echo "✨ Models generated!"
 
-.PHONE: deploy
+.PHONY: deploy
 deploy:
 	@echo "🚀 Deploying ..."
 	@./docker_build.sh
 	@./deploy.sh
 	@echo "✨ Deployment completed!"
+
+.PHONY: lint
+lint: fmt clippy
+
+.PHONY: fmt
+fmt:
+	@echo "📝 Formatting..."
+	@cargo fmt --all -- --check
+	@echo "✨ Formatting completed!"
+
+.PHONY: clippy
+clippy:
+	@echo "🔍 Running clippy..."
+	@cargo clippy --all-targets --all-features
+	@echo "✅ Clippy completed!"
+
+.PHONY: test
+test:
+	@echo "🧪 Running tests..."
+	@cargo test
+	@echo "✅ Tests completed!"

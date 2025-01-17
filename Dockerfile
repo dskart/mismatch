@@ -1,7 +1,7 @@
 FROM node:20-bookworm-slim AS ui-builder
 
-WORKDIR /usr/src/app/mismatch/src/api/ui
-COPY ./src/api/ui .
+WORKDIR /usr/src/app/mismatch/src/ui
+COPY ./src/ui .
 
 RUN apt-get update && apt-get install -y \
     make \
@@ -50,7 +50,7 @@ COPY ./Cargo.toml ./Cargo.toml
 RUN cargo build --release
 RUN rm src/*.rs
 
-COPY --from=ui-builder /usr/src/app/mismatch/src/api/ui ./src/api/ui
+COPY --from=ui-builder /usr/src/app/mismatch/src/ui ./src/ui
 COPY ./src ./src
 
 # Build the project
@@ -61,7 +61,7 @@ FROM debian:bookworm-slim
 
 COPY --from=rust-builder /usr/lib/libonnxruntime.so* /usr/lib/
 COPY --from=models-builder /usr/src/app/mismatch/models /usr/src/app/mismatch/models
-COPY --from=rust-builder /usr/src/app/mismatch/src/api/ui/public /usr/src/app/mismatch/src/api/ui/public
+COPY --from=rust-builder /usr/src/app/mismatch/src/ui/public /usr/src/app/mismatch/src/ui/public
 COPY --from=rust-builder /usr/src/app/mismatch/target/release/mismatch /usr/local/bin/
 ENV LD_LIBRARY_PATH=/usr/lib
 

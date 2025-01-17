@@ -11,11 +11,7 @@ impl TemplateState {
         Ok(Self { templates: env })
     }
 
-    pub fn add_template(
-        &mut self,
-        name: &'static str,
-        content: &'static str,
-    ) -> anyhow::Result<()> {
+    pub fn add_template(&mut self, name: &'static str, content: &'static str) -> anyhow::Result<()> {
         self.templates
             .add_template(name, content)
             .map_err(|_| anyhow::anyhow!("failed to add template {}", name))?;

@@ -44,11 +44,7 @@ pub async fn execute() -> i32 {
 }
 
 pub async fn set_up_and_exec(matches: &clap::ArgMatches) -> Result<()> {
-    let log_level = if matches.get_flag("verbose") {
-        "debug"
-    } else {
-        "info"
-    };
+    let log_level = if matches.get_flag("verbose") { "debug" } else { "info" };
 
     let stdin = std::io::stdin();
     let tracing_registry = tracing_subscriber::registry()
@@ -56,9 +52,7 @@ pub async fn set_up_and_exec(matches: &clap::ArgMatches) -> Result<()> {
         .with(tracing_subscriber::EnvFilter::new(log_level));
 
     if stdin.is_terminal() {
-        tracing_registry
-            .with(tracing_subscriber::fmt::layer().pretty())
-            .init();
+        tracing_registry.with(tracing_subscriber::fmt::layer().pretty()).init();
     } else {
         tracing_registry
             .with(tracing_subscriber::fmt::layer().json().flatten_event(true))

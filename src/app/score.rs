@@ -28,12 +28,8 @@ impl App {
             offsets.push(cumsum as i64);
         }
 
-        let flattened_input_ids: Vec<i64> =
-            input_ids.into_iter().flatten().map(|x| x as i64).collect();
-        let ids_tensor = Tensor::from_array((
-            [flattened_input_ids.len()],
-            flattened_input_ids.into_boxed_slice(),
-        ))?;
+        let flattened_input_ids: Vec<i64> = input_ids.into_iter().flatten().map(|x| x as i64).collect();
+        let ids_tensor = Tensor::from_array(([flattened_input_ids.len()], flattened_input_ids.into_boxed_slice()))?;
         let offset_tensor = Tensor::from_array(([offsets.len()], offsets.into_boxed_slice()))?;
 
         // Run the model.
@@ -48,9 +44,7 @@ impl App {
             .run(sess_inputs)?;
 
         // Extract our embeddings tensor and convert it to a strongly-typed 2-dimensional array.
-        let embeddings = outputs[0]
-            .try_extract_tensor::<f32>()?
-            .into_dimensionality::<Ix2>()?;
+        let embeddings = outputs[0].try_extract_tensor::<f32>()?.into_dimensionality::<Ix2>()?;
 
         // Since there is only one dimension, just compute dot product
         let word1_embeddings = embeddings.index_axis(Axis(0), 0);

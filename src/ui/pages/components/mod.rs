@@ -1,7 +1,4 @@
-use crate::api::{
-    error::ApiError,
-    ui::{templating, UiState},
-};
+use crate::ui::{error::UiError, templating, UiState};
 use axum::{extract::State, http::StatusCode, response::Html, routing, Json};
 use minijinja::context;
 use serde::{Deserialize, Serialize};
@@ -27,31 +24,23 @@ pub struct PostSubmitRequest {
 async fn handle_post_submit(
     State(state): State<Arc<UiState>>,
     Json(req): Json<PostSubmitRequest>,
-) -> Result<Html<String>, ApiError> {
+) -> Result<Html<String>, UiError> {
     // Validate input length
     if req.word1.len() > 20 || req.word2.len() > 20 {
-        return Err(ApiError::new(
-            StatusCode::BAD_REQUEST,
-            "Input too long".to_string(),
-        ));
+        return Err(UiError::new(StatusCode::BAD_REQUEST, "Input too long".to_string()));
     }
 
     // Validate that inputs contain only letters
     if !req.word1.chars().all(char::is_alphabetic) || !req.word2.chars().all(char::is_alphabetic) {
-        return Err(ApiError::new(
+        return Err(UiError::new(
             StatusCode::BAD_REQUEST,
             "Input must contain only letters".to_string(),
         ));
     }
 
-    let template = state
-        .template_state
-        .get_template("components/submit.html.j2")?;
+    let template = state.template_state.get_template("components/submit.html.j2")?;
 
-    let score = state
-        .api_state
-        .app
-        .get_score(req.word1.clone(), req.word2.clone())?;
+    let score = state.app.get_score(req.word1.clone(), req.word2.clone())?;
 
     let rendered = template.render(context!(
         score => score,

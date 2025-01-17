@@ -20,10 +20,8 @@ impl Config {
     }
 
     pub fn load_from_env(&mut self, prefix: &str) -> Result<()> {
-        self.api
-            .load_from_env([prefix, "API__"].join("").as_str())?;
-        self.app
-            .load_from_env([prefix, "APP__"].join("").as_str())?;
+        self.api.load_from_env([prefix, "API__"].join("").as_str())?;
+        self.app.load_from_env([prefix, "APP__"].join("").as_str())?;
         Ok(())
     }
 }

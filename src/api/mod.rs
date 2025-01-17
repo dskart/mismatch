@@ -11,7 +11,6 @@ use tracing::Span;
 pub mod config;
 pub use config::Config;
 mod error;
-mod ui;
 
 #[derive(Debug)]
 pub struct Api {
@@ -19,6 +18,7 @@ pub struct Api {
 }
 
 struct ApiState {
+    #[allow(dead_code)]
     app: Arc<app::App>,
 }
 
@@ -28,14 +28,11 @@ impl Api {
     }
 
     pub fn get_router(&self) -> Result<axum::Router> {
-        let api_state = Arc::new(ApiState {
-            app: self.app.clone(),
-        });
+        let api_state = Arc::new(ApiState { app: self.app.clone() });
 
         let router = axum::Router::new()
             .route("/healthz", routing::get(healthz_handler))
-            .nest("/", ui::get_router(api_state)?)
-            .layer(                    TraceLayer::new_for_http()
+            .layer(TraceLayer::new_for_http()
                         .make_span_with(|request: &Request<Body>| {
                             let mut random_bytes = [0u8; 15];
                             rand::thread_rng().fill_bytes(&mut random_bytes);
@@ -45,7 +42,9 @@ impl Api {
                         .on_response(|response: &Response, latency: Duration, _span: &Span| {
                             let status = response.status();
                             tracing::info!(?status, ?latency)
-                        }));
+                        })
+                    )
+            .with_state(api_state);
         Ok(router)
     }
 }
@@ -110,12 +109,7 @@ mod tests {
         let router = api.get_router().unwrap();
 
         let response = router
-            .oneshot(
-                Request::builder()
-                    .uri("/does-not-exist")
-                    .body(Body::empty())
-                    .unwrap(),
-            )
+            .oneshot(Request::builder().uri("/does-not-exist").body(Body::empty()).unwrap())
             .await
             .unwrap();
 

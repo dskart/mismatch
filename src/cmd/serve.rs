@@ -1,6 +1,7 @@
 use std::sync::Arc;
 
 use crate::cmd::Config;
+use crate::ui;
 use crate::{api::Api, app::App};
 use anyhow::{Ok, Result};
 use clap::{self, value_parser, Arg};
@@ -23,9 +24,12 @@ pub fn cmd() -> clap::Command {
 
 pub async fn run(config: Config, args: &clap::ArgMatches) -> Result<()> {
     let app = Arc::new(App::new(config.app)?);
-    let api = Api::new(config.api, app);
+    let api = Api::new(config.api, app.clone());
 
-    let router = api.get_router()?;
+    let router = axum::Router::new()
+        .nest("/", ui::get_router(app)?)
+        .nest("/api", api.get_router()?);
+
     let port = args.get_one::<usize>("port").expect("port is required");
 
     let mut listenfd = ListenFd::from_env();
