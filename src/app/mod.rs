@@ -1,20 +1,22 @@
 use anyhow::Ok;
 use model::ModelType;
 use ort::session::{builder::GraphOptimizationLevel, Session as OrtSession};
-use std::path::Path;
+use std::{path::Path, sync::Arc};
 use tokenizers::Tokenizer;
-use tracing::warn;
+use tracing::{info, warn};
 
 pub mod config;
 pub use config::Config;
 mod model;
 mod score;
+pub mod session;
+pub use session::Session;
 
 #[derive(Debug)]
 pub struct App {
     _cfg: Config,
-    ort_session: Option<OrtSession>,
-    tokenizer: Option<Tokenizer>,
+    ort_session: Option<Arc<OrtSession>>,
+    tokenizer: Option<Arc<Tokenizer>>,
 }
 
 impl App {
@@ -33,9 +35,14 @@ impl App {
             tokenizer,
         })
     }
+
+    pub fn new_session(&self) -> Session {
+        info!("Creating new session");
+        Session::new(self.ort_session.clone(), self.tokenizer.clone())
+    }
 }
 
-fn init_ort(model: String) -> anyhow::Result<(OrtSession, Tokenizer)> {
+fn init_ort(model: String) -> anyhow::Result<(Arc<OrtSession>, Arc<Tokenizer>)> {
     ort::init().with_name("mismatch").commit()?;
     let ort_session = OrtSession::builder()?
         .with_optimization_level(GraphOptimizationLevel::Level1)?
@@ -55,5 +62,6 @@ fn init_ort(model: String) -> anyhow::Result<(OrtSession, Tokenizer)> {
     )
     .expect("Failed to load tokenizer");
 
-    Ok((ort_session, tokenizer))
+    let ret = (Arc::new(ort_session), Arc::new(tokenizer));
+    Ok(ret)
 }

@@ -1,9 +1,9 @@
 use ndarray::{Axis, Ix2};
 use ort::{value::Tensor, Error};
 
-use crate::app::App;
+use crate::app::session::Session;
 
-impl App {
+impl Session {
     pub fn get_score(&self, word1: String, word2: String) -> anyhow::Result<i32> {
         if self.tokenizer.is_none() || self.ort_session.is_none() {
             anyhow::bail!("Tokenizer or ONNX session not initialized");

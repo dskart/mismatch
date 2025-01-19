@@ -1,24 +1,25 @@
 use crate::ui::error::UiError;
-use crate::ui::templating;
-use crate::ui::UiState;
+use crate::ui::page::PageState;
+use crate::ui::template_manager::TemplateManager;
 use axum::{extract::State, response::Html, routing};
 use minijinja::context;
 use std::sync::Arc;
+use tracing::info;
 
-use crate::ui::PageRegistration;
+use crate::ui::page::Page;
 
 mod components;
 
 pub struct HomePage {}
 
-impl PageRegistration for HomePage {
-    fn register_template(&self, template_state: &mut templating::TemplateState) -> anyhow::Result<()> {
-        components::add_templates(template_state)?;
-        template_state.add_template("index.html.j2", include_str!("index.html.j2"))?;
+impl Page for HomePage {
+    fn register_template(&self, template_manager: &mut TemplateManager) -> anyhow::Result<()> {
+        components::add_templates(template_manager)?;
+        template_manager.add_template("index.html.j2", include_str!("index.html.j2"))?;
         anyhow::Ok(())
     }
 
-    fn get_router(&self, ui_state: Arc<UiState>) -> anyhow::Result<axum::Router> {
+    fn get_router(&self, ui_state: Arc<PageState>) -> anyhow::Result<axum::Router> {
         let components_router = components::get_router(ui_state.clone())?;
         let router = axum::Router::new()
             .route("/", routing::get(handle_index))
@@ -29,11 +30,13 @@ impl PageRegistration for HomePage {
     }
 }
 
-async fn handle_index(State(state): State<Arc<UiState>>) -> Result<Html<String>, UiError> {
-    let template = state.template_state.get_template("index.html.j2")?;
+async fn handle_index(State(state): State<Arc<PageState>>) -> Result<Html<String>, UiError> {
+    let template = state.template_manager.get_template("index.html.j2")?;
     let rendered = template.render(context!(
         version => env!("CARGO_PKG_VERSION"),
     ))?;
+
+    info!("Rendered index page");
 
     Ok(Html(rendered))
 }
