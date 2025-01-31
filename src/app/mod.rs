@@ -3,7 +3,7 @@ use model::ModelType;
 use ort::session::{builder::GraphOptimizationLevel, Session as OrtSession};
 use std::{path::Path, sync::Arc};
 use tokenizers::Tokenizer;
-use tracing::{info, warn};
+use tracing::warn;
 
 pub mod config;
 pub use config::Config;
@@ -37,7 +37,6 @@ impl App {
     }
 
     pub fn new_session(&self) -> Session {
-        info!("Creating new session");
         Session::new(self.ort_session.clone(), self.tokenizer.clone())
     }
 }
@@ -64,4 +63,24 @@ fn init_ort(model: String) -> anyhow::Result<(Arc<OrtSession>, Arc<Tokenizer>)> 
 
     let ret = (Arc::new(ort_session), Arc::new(tokenizer));
     Ok(ret)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    pub struct TestApp {
+        app: App,
+    }
+
+    impl TestApp {
+        pub fn new(cfg: Option<Config>) -> Self {
+            let cfg = cfg.unwrap_or_default();
+            let app = App::new(cfg).unwrap();
+            Self { app }
+        }
+
+        pub fn new_session(&self) -> Session {
+            self.app.new_session()
+        }
+    }
 }

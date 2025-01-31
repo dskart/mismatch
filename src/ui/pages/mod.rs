@@ -4,7 +4,6 @@ use crate::ui::template_manager::TemplateManager;
 use axum::{extract::State, response::Html, routing};
 use minijinja::context;
 use std::sync::Arc;
-use tracing::info;
 
 use crate::ui::page::Page;
 
@@ -35,8 +34,6 @@ async fn handle_index(State(state): State<Arc<PageState>>) -> Result<Html<String
     let rendered = template.render(context!(
         version => env!("CARGO_PKG_VERSION"),
     ))?;
-
-    info!("Rendered index page");
 
     Ok(Html(rendered))
 }
