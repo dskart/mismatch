@@ -1,4 +1,5 @@
-/target
+target/
 config.yaml
 config.yml
-/models
+models/
+gen/

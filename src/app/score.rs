@@ -87,10 +87,7 @@ mod tests {
 
     #[test]
     fn test_get_score_similarity() -> Result<()> {
-        let session = TestApp::new(Some(Config {
-            model: ModelType::PotionBase8M,
-        }))
-        .new_session();
+        let session = TestApp::new(Some(ModelType::PotionBase8M)).new_session();
 
         // Test identical words
         let score1 = session.get_score("cat".to_string(), "cat".to_string())?;
@@ -104,10 +101,7 @@ mod tests {
 
     #[test]
     fn test_get_embeddings_input() -> Result<()> {
-        let session = TestApp::new(Some(Config {
-            model: ModelType::PotionBase8M,
-        }))
-        .new_session();
+        let session = TestApp::new(Some(ModelType::PotionBase8M)).new_session();
 
         let (ids_tensor, offset_tensor) = session.get_embeddings_input("cat".to_string(), "kitten".to_string())?;
         assert_eq!(ids_tensor.shape()?.as_slice(), &[2]);
@@ -117,10 +111,7 @@ mod tests {
 
     #[test]
     fn test_compute_cosine_similarity() -> Result<()> {
-        let session = TestApp::new(Some(Config {
-            model: ModelType::PotionBase8M,
-        }))
-        .new_session();
+        let session = TestApp::new(None).new_session();
 
         let word1_embeddings = ndarray::arr1(&[1.0, 2.0, 3.0]);
         let word2_embeddings = ndarray::arr1(&[2.0, 3.0, 4.0]);

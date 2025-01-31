@@ -1,6 +1,7 @@
 mod api;
 mod app;
 mod cmd;
+mod store;
 mod ui;
 
 #[tokio::main]

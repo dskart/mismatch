@@ -1,3 +1,4 @@
+use crate::store::Store;
 use anyhow::Ok;
 use model::ModelType;
 use ort::session::{builder::GraphOptimizationLevel, Session as OrtSession};
@@ -17,6 +18,7 @@ pub struct App {
     _cfg: Config,
     ort_session: Option<Arc<OrtSession>>,
     tokenizer: Option<Arc<Tokenizer>>,
+    _store: Arc<Store>,
 }
 
 impl App {
@@ -29,10 +31,13 @@ impl App {
             (Some(ort_session), Some(tokenizers))
         };
 
+        let store = Arc::new(Store::new(cfg.store)?);
+
         Ok(App {
             _cfg: cfg,
             ort_session,
             tokenizer,
+            _store: store,
         })
     }
 
@@ -68,13 +73,20 @@ fn init_ort(model: String) -> anyhow::Result<(Arc<OrtSession>, Arc<Tokenizer>)> 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::store::{config::BlobStorageType, Config as StoreConfig};
     pub struct TestApp {
         app: App,
     }
 
     impl TestApp {
-        pub fn new(cfg: Option<Config>) -> Self {
-            let cfg = cfg.unwrap_or_default();
+        pub fn new(model: Option<ModelType>) -> Self {
+            let model = model.unwrap_or(ModelType::None);
+            let cfg = Config {
+                model,
+                store: StoreConfig {
+                    blob_storage: BlobStorageType::Local,
+                },
+            };
             let app = App::new(cfg).unwrap();
             Self { app }
         }

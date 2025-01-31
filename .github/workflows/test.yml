@@ -16,4 +16,7 @@ jobs:
     - uses: actions/checkout@v4
     - uses: ./.github/actions/cargo-cache
     - name: Run tests
-      run: cargo test --verbose
+      run: | 
+        make models
+        cargo test --verbose
+

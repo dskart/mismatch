@@ -96,6 +96,13 @@ test: ## Run tests
 	@cargo test
 	@echo "${GREEN}✅ Tests completed!${RESET}"
 
+## Scripts
+.PHONY: gen_word_dict
+gen_word_dict: ## Generate word dictionary
+	@echo "${CYAN}🚀 Generating word dictionary...${RESET}"
+	@cargo run --bin gen_word_dict
+	@echo "${GREEN}✨ Word dictionary generated!${RESET}"
+
 .PHONY: help
 help:
 	@echo ''

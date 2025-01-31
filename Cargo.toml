@@ -2,6 +2,7 @@
 name = "mismatch"
 version = "0.8.0"
 edition = "2021"
+default-run = "mismatch"
 
 [dependencies]
 anyhow = "1.0.95"
@@ -25,6 +26,7 @@ tracing-subscriber = { version = "0.3.19", features = ["env-filter", "json"] }
 ort = "=2.0.0-rc.9"
 rand = "0.8.5"
 base64 = "0.22.1"
+reqwest = "0.12.12"
 
 
 [features]

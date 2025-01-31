@@ -2,7 +2,7 @@ use std::{fmt, str::FromStr};
 
 use serde::Deserialize;
 
-#[derive(Default, Deserialize, Debug)]
+#[derive(Default, Deserialize, Debug, Copy, Clone)]
 pub enum ModelType {
     #[default]
     None,
