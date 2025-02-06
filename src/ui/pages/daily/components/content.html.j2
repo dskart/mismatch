@@ -1,0 +1,45 @@
+<form hx-post="/daily/components/submit" hx-ext="json-enc" hx-target="this" hx-swap="outerHTML"
+  class="flex flex-col space-y-4 p-4 max-w-md mx-auto">
+  <input type="text" name="daily_word" placeholder="Daily Word" maxlength="20"
+    class="input input-bordered w-full max-w-xs mx-auto" readonly value="{{ daily_word }}">
+
+  <input type="text" name="word" placeholder="Your Word" maxlength="20"
+    class="input input-bordered w-full max-w-xs mx-auto" oninput="validateInput(this)"
+    value="{{ word if word is defined else '' }}">
+
+  <button type="submit" id="submitBtn" class="btn btn-primary max-w-xs mx-auto" disabled>
+    Submit Words
+  </button>
+
+  {% if score is defined %}
+  <div class="max-w-xs mx-auto text-center">
+    <p>daily word: {{ daily_word }}</p>
+    <p>your word: {{ word }}</p>
+    <p>Score: {{ score }}</p>
+  </div>
+  {% endif %}
+
+  <div id="highScoreDisplay" class="max-w-xs mx-auto text-center mt-4">
+    <div class="flex items-center justify-center">
+      <h3 class="font-bold">High Score</h3>
+    </div>
+    <p id="highScoreText" class="text-sm"></p>
+    <p id="highScoreWords" class="text-sm"></p>
+    <button id="copyHighScoreBtn" type="button" onclick="copyHighScore()" class="btn btn-s mt-2" title="Share score">
+      <span id="copyText">Copy High Score !</span>
+      <svg id="copyIcon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+        stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+      </svg>
+    </button>
+  </div>
+
+  <script>
+    {% if score is defined %}
+    window.scripts.updateHighScore({{ score }}, "{{ daily_word }}", "{{ word }}");
+    {% endif %}
+    window.scripts.displayHighScore();
+  </script>
+
+</form>
