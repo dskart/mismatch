@@ -1,7 +1,6 @@
-module.exports = {
+export default {
   plugins: {
-    "postcss-import": {},
-    tailwindcss: {},
+    "@tailwindcss/postcss": {},
     autoprefixer: {},
     cssnano: {
       preset: "default",

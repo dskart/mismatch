@@ -7,28 +7,21 @@ use std::sync::Arc;
 
 use crate::ui::page::Page;
 
-pub mod daily;
+const PAGE_PREFIX: &str = "/daily";
+const TEMPLATE_NAME: &str = "/daily/index.html.j2";
 
-mod components;
+pub struct DailyPage {}
 
-const PAGE_PREFIX: &str = "/";
-const TEMPLATE_NAME: &str = "index.html.j2";
-
-pub struct HomePage {}
-
-impl Page for HomePage {
+impl Page for DailyPage {
     fn register_template(&self, template_manager: &mut TemplateManager) -> anyhow::Result<()> {
-        components::add_templates(template_manager)?;
         template_manager.add_template(TEMPLATE_NAME, include_str!("index.html.j2"))?;
         anyhow::Ok(())
     }
 
     fn get_router(&self, ui_state: Arc<PageState>) -> anyhow::Result<axum::Router> {
-        let components_router = components::get_router(ui_state.clone())?;
         let router = axum::Router::new()
             .route(PAGE_PREFIX, routing::get(handle_index))
-            .with_state(ui_state)
-            .nest("/components", components_router);
+            .with_state(ui_state);
 
         anyhow::Ok(router)
     }

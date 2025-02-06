@@ -17,7 +17,7 @@ pub fn register_pages(
     template_manager: &mut TemplateManager,
     parent_router: axum::Router,
 ) -> anyhow::Result<axum::Router> {
-    let pages: Vec<Box<dyn Page>> = vec![Box::new(pages::HomePage {})];
+    let pages: Vec<Box<dyn Page>> = vec![Box::new(pages::HomePage {}), Box::new(pages::daily::DailyPage {})];
 
     for page in &pages {
         page.register_template(template_manager)?;

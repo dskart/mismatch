@@ -8,17 +8,18 @@ use tracing::warn;
 
 pub mod config;
 pub use config::Config;
-mod model;
-mod score;
 pub mod session;
 pub use session::Session;
+mod daily_word;
+mod model;
+mod score;
 
 #[derive(Debug)]
 pub struct App {
     _cfg: Config,
     ort_session: Option<Arc<OrtSession>>,
     tokenizer: Option<Arc<Tokenizer>>,
-    _store: Arc<Store>,
+    store: Arc<Store>,
 }
 
 impl App {
@@ -37,12 +38,12 @@ impl App {
             _cfg: cfg,
             ort_session,
             tokenizer,
-            _store: store,
+            store,
         })
     }
 
     pub fn new_session(&self) -> Session {
-        Session::new(self.ort_session.clone(), self.tokenizer.clone())
+        Session::new(self.ort_session.clone(), self.tokenizer.clone(), self.store.clone())
     }
 }
 
