@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.9.0](https://github.com/dskart/mismatch/compare/v0.8.0...v0.9.0) (2025-04-27)
+
+
+### Features
+
+* added app tests ([22bfe25](https://github.com/dskart/mismatch/commit/22bfe250e683abb444d001b94c1050e47467b3cd))
+* added daily word and update tailwind ([47ce46c](https://github.com/dskart/mismatch/commit/47ce46cb0cb5d63b2a89d70105221cf70ef593f4))
+* added store ([f5ca16c](https://github.com/dskart/mismatch/commit/f5ca16c59f4d4aeb9747db1d0c275ca06163b9e1))
+* fix daily page ([33cc637](https://github.com/dskart/mismatch/commit/33cc63753464158b7badcf2f22dc3385f3c12acd))
+* move to helm ([f934b75](https://github.com/dskart/mismatch/commit/f934b75574408fe454080bc1eeec65b8a9006b58))
+* refactor and asdded session ([d2780fe](https://github.com/dskart/mismatch/commit/d2780fe1434512d6ebcc02b5c414dca37c8b2bb6))
+
 ## [0.8.0](https://github.com/dskart/mismatch/compare/v0.7.0...v0.8.0) (2025-01-17)
 
 
