@@ -3,10 +3,20 @@
 # Exit on any error
 set -e
 
+# Default values
+REGISTRY="192.168.1.241:5000"
+REPOSITORY="mismatch"
+NAMESPACE="mismatch-system"
+RELEASE_NAME="mismatch"
+HELM_CHART_PATH="./helm"
+
 # Function to display usage
 usage() {
-    echo "📋 Usage: $0 [-v VERSION]"
-    echo "  -v: Additional version tag (default: git commit hash)"
+    echo "📋 Usage: $0 [-v VERSION] [-r REGISTRY] [-n NAMESPACE] [-c HELM_CHART_PATH]"
+    echo "  -v: Version tag to deploy (default: git tag or commit hash)"
+    echo "  -r: Registry URI (default: ${REGISTRY})"
+    echo "  -n: Kubernetes namespace (default: ${NAMESPACE})"
+    echo "  -c: Path to Helm chart directory (default: ${HELM_CHART_PATH})"
     exit 1
 }
 
@@ -31,9 +41,12 @@ get_version_identifier() {
     fi
 }
 
-while getopts "v:" opt; do
+while getopts "v:r:n:c:" opt; do
     case $opt in
         v) VERSION="$OPTARG";;
+        r) REGISTRY="$OPTARG";;
+        n) NAMESPACE="$OPTARG";;
+        c) HELM_CHART_PATH="$OPTARG";;
         ?) usage;;
     esac
 done
@@ -42,33 +55,38 @@ if [ -z "$VERSION" ]; then
     VERSION=$(get_version_identifier)
 fi
 
-cd ./aws
-
-# Source NVM if available
-if [ -f "$HOME/.nvm/nvm.sh" ]; then
-    . "$HOME/.nvm/nvm.sh"
-elif [ -f "/usr/local/opt/nvm/nvm.sh" ]; then
-    . "/usr/local/opt/nvm/nvm.sh"
-else
-    error_log "NVM not found. Please install NVM first."
+# Check if helm is installed
+if ! command -v helm &> /dev/null; then
+    error_log "Helm is not installed"
     exit 1
 fi
 
-# Try to use project's Node.js version or fallback to default
-if [ -f ".nvmrc" ]; then
-    nvm use || nvm use default
-else
-    log "ℹ️" "No .nvmrc found, using default Node version"
-    nvm use default
+# Check if helm chart exists
+if [ ! -d "$HELM_CHART_PATH" ]; then
+    error_log "Helm chart directory not found: $HELM_CHART_PATH"
+    exit 1
 fi
 
-# Deploy using AWS CDK
-log "🚀" "Deploying with AWS CDK..."
+# Log deployment details
+log "🚀" "Deploying Helm chart..."
 log "🏷️" "Version: ${VERSION}"
-if cdk deploy MismatchStack --parameters ImageTag=${VERSION}; then
+log "🔄" "Registry: ${REGISTRY}"
+log "📦" "Namespace: ${NAMESPACE}"
+log "📁" "Helm chart: ${HELM_CHART_PATH}"
+
+# Deploy using Helm
+if helm upgrade --install \
+    ${RELEASE_NAME} \
+    ${HELM_CHART_PATH} \
+    --namespace ${NAMESPACE} \
+    --create-namespace \
+    --set image.tag=${VERSION} \
+    --set image.repository=${REGISTRY}/${REPOSITORY} \
+    --set appVersion="${VERSION}"; then
+    
     echo
-    log "✅" "Deployment complete"
-else 
+    log "✅" "Helm chart deployment complete"
+else
     echo
     error_log "Deployment failed"
     exit 1

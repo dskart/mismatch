@@ -4,23 +4,18 @@
 set -e
 
 # Default values
-IMAGE_NAME="mismatch"
-PLATFORMS="linux/amd64,linux/arm64"
 DOCKERFILE="Dockerfile"
 BUILD_CONTEXT="."
-AWS_REGION="us-east-1"
-ECR_REPO_URI="767828732964.dkr.ecr.us-east-1.amazonaws.com"
+REGISTRY="192.168.1.241:5000"
+REPOSITORY="mismatch"
 
 # Function to display usage
 usage() {
-    echo "📋 Usage: $0 -i IMAGE_NAME -r ECR_REPO_URI [-v VERSION] [-p PLATFORMS] [-f DOCKERFILE] [-c BUILD_CONTEXT] [-a AWS_REGION]"
-    echo "  -i: Image name (default: ${mismatch})"
-    echo "  -r: ECR repository URI (default: ${ECR_REPO_URI})"
+    echo "📋 Usage: $0 [-r REGISTRY] [-v VERSION] [-f DOCKERFILE] [-c BUILD_CONTEXT]"
+    echo "  -r: Registry URI (default: ${REGISTRY})"
     echo "  -v: Additional version tag (default: git commit hash)"
-    echo "  -p: Platforms to build for (default: linux/amd64,linux/arm64)"
     echo "  -f: Dockerfile path (default: Dockerfile)"
     echo "  -c: Build context path (default: current directory)"
-    echo "  -a: AWS region (default: us-east-1)"
     exit 1
 }
 
@@ -57,24 +52,18 @@ get_git_tag() {
 }
 
 # Parse command line arguments
-while getopts "i:r:v:p:f:c:a:" opt; do
+while getopts "r:v:f:c:" opt; do
     case $opt in
-        i) IMAGE_NAME="$OPTARG";;
-        r) ECR_REPO_URI="$OPTARG";;
+        r) REGISTRY="$OPTARG";;
         v) VERSION="$OPTARG";;
-        p) PLATFORMS="$OPTARG";;
         f) DOCKERFILE="$OPTARG";;
         c) BUILD_CONTEXT="$OPTARG";;
-        a) AWS_REGION="$OPTARG";;
         ?) usage;;
     esac
 done
 
-# Check if image name and ECR repository URI are provided
-if [ -z "$IMAGE_NAME" ] || [ -z "$ECR_REPO_URI" ]; then
-    error_log "Image name and ECR repository URI are required"
-    usage
-fi
+# Full image reference
+IMAGE="${REGISTRY}/${REPOSITORY}"
 
 GIT_HASH=$(get_git_hash)
 GIT_TAG=$(get_git_tag)
@@ -88,66 +77,52 @@ if [ "$GIT_TAG" ]; then
     TAGS+=("$GIT_TAG")
 fi
 
-for tag in "${TAGS[@]}"; do
-    TAG_ARGS="--tag ${ECR_REPO_URI}/${IMAGE_NAME}:${tag} $TAG_ARGS"
-done
-
 # Check if docker is installed
 if ! command -v docker &> /dev/null; then
     error_log "Docker is not installed"
     exit 1
 fi
 
-# Check if buildx is installed
-if ! docker buildx version &> /dev/null; then
-    error_log "Docker buildx is not installed"
-    exit 1
-fi
-
-# Check if aws cli is installed
-if ! command -v aws &> /dev/null; then
-    error_log "AWS CLI is not installed"
-    exit 1
-fi
-
-# Authenticate Docker to the ECR registry
-log "🔑" "Authenticating Docker to ECR"
-aws ecr get-login-password --region "$AWS_REGION" | docker login --username AWS --password-stdin "$ECR_REPO_URI"
-
 # Print banner
-echo "🐳 Docker Multi-Architecture Build Script 🏗️"
-echo "============================================"
-
-# Create a new builder instance if it doesn't exist
-if ! docker buildx inspect multiarch-builder &> /dev/null; then
-    log "🔧" "Creating new buildx builder instance"
-    docker buildx create --name multiarch-builder --driver docker-container --bootstrap
-fi
-
-# Use the builder
-log "🔄" "Switching to multiarch builder"
-docker buildx use multiarch-builder
+echo "🐳 Docker Build Script 🏗️"
+echo "=========================="
 
 # Start the build process
-log "🚀" "Starting multi-architecture build for $IMAGE_NAME"
+log "🚀" "Building image: $IMAGE"
 log "🏷️" "Tags: ${TAGS[*]}"
-log "💻" "Building for platforms: $PLATFORMS"
 log "📄" "Using Dockerfile: $DOCKERFILE"
 log "📁" "Build context: $BUILD_CONTEXT"
 
-# Build and push the images
-if docker buildx build \
-    --platform "$PLATFORMS" \
-    $TAG_ARGS \
-    --file "$DOCKERFILE" \
-    --push \
-    "$BUILD_CONTEXT"; then
+# Build the image with the first tag
+PRIMARY_TAG="${IMAGE}:${TAGS[0]}"
+
+if docker build -t "$PRIMARY_TAG" -f "$DOCKERFILE" "$BUILD_CONTEXT"; then
+    log "✅" "Successfully built image: $PRIMARY_TAG"
+    
+    # Add additional tags to the image
+    for ((i=1; i<${#TAGS[@]}; i++)); do
+        tag="${TAGS[$i]}"
+        docker tag "$PRIMARY_TAG" "${IMAGE}:${tag}"
+        log "🏷️" "Tagged image with: ${tag}"
+    done
+    
+    # Push all tagged images to registry
+    log "⬆️" "Pushing images to registry"
+    
+    for tag in "${TAGS[@]}"; do
+        log "⏳" "Pushing ${IMAGE}:${tag}"
+        if docker push "${IMAGE}:${tag}"; then
+            log "✅" "Successfully pushed ${IMAGE}:${tag}"
+        else
+            error_log "Failed to push ${IMAGE}:${tag}"
+            exit 1
+        fi
+    done
     
     echo
-    log "✅" "Successfully built and pushed multi-architecture image"
-    log "📦" "Image: $IMAGE_NAME"
+    log "✅" "Successfully built and pushed all images"
+    log "📦" "Image: $IMAGE"
     log "🏷️" "Tags: ${TAGS[*]}"
-    log "🎯" "Platforms: $PLATFORMS"
 else
     echo
     error_log "Build failed"

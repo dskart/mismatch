@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y \
 
 RUN make update-htmx
 RUN npm install
-RUN make ui
+RUN npm run build
 
 FROM debian:bookworm-slim AS models-builder
 
@@ -55,7 +55,9 @@ COPY ./src ./src
 
 # Build the project
 RUN rm ./target/release/deps/mismatch*
+COPY ./Makefile ./Makefile
 RUN cargo build --release
+run make gen_word_dict
 
 FROM debian:bookworm-slim
 
@@ -63,9 +65,11 @@ COPY --from=rust-builder /usr/lib/libonnxruntime.so* /usr/lib/
 COPY --from=models-builder /usr/src/app/mismatch/models /usr/src/app/mismatch/models
 COPY --from=rust-builder /usr/src/app/mismatch/src/ui/public /usr/src/app/mismatch/src/ui/public
 COPY --from=rust-builder /usr/src/app/mismatch/target/release/mismatch /usr/local/bin/
+COPY --from=rust-builder /usr/src/app/mismatch/gen /usr/src/app/mismatch/gen
 ENV LD_LIBRARY_PATH=/usr/lib
 
 RUN mismatch --help > /dev/null
 
 ENV MISMATCH__APP__MODEL=potion-base-8M
+ENV MISMATCH__APP__STORE__BLOB_STORAGE=LOCAL
 ENTRYPOINT ["mismatch"]
