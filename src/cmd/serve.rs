@@ -47,7 +47,33 @@ pub async fn run(config: Config, args: &clap::ArgMatches) -> Result<()> {
         "listening on {}",
         listener.local_addr().expect("failed to get local addr")
     );
-    axum::serve(listener, router).await?;
+    axum::serve(listener, router)
+        .with_graceful_shutdown(shutdown_signal())
+        .await?;
 
     Ok(())
+}
+
+/// Resolves on Ctrl+C or SIGTERM. The server runs as PID 1 in its container, where SIGTERM is ignored unless
+/// handled, so without this Cloudflare container rollouts wait the full grace period before SIGKILL.
+async fn shutdown_signal() {
+    let ctrl_c = async {
+        tokio::signal::ctrl_c().await.expect("failed to install Ctrl+C handler");
+    };
+
+    #[cfg(unix)]
+    let terminate = async {
+        tokio::signal::unix::signal(tokio::signal::unix::SignalKind::terminate())
+            .expect("failed to install SIGTERM handler")
+            .recv()
+            .await;
+    };
+    #[cfg(not(unix))]
+    let terminate = std::future::pending::<()>();
+
+    tokio::select! {
+        _ = ctrl_c => {},
+        _ = terminate => {},
+    }
+    info!("shutdown signal received, draining connections");
 }

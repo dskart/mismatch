@@ -17,7 +17,7 @@ serde = { version = "1.0.216", features = ["derive"] }
 serde_json = "1.0.134"
 serde_yaml = "0.9.34"
 tokenizers = "0.21.0"
-tokio = { version = "1.42.0", features = ["macros", "rt-multi-thread"] }
+tokio = { version = "1.42.0", features = ["macros", "rt-multi-thread", "signal"] }
 tower = "0.5.2"
 tower-http = { version = "0.6.2", features = ["fs", "trace"] }
 tracing = "0.1.41"
