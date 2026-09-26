@@ -79,11 +79,15 @@ jobs:
       cancel-in-progress: false
     permissions:
       contents: read
-      packages: read
+      packages: write
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      CF_TAG: mismatch:sha-${{ github.sha }}
+      SRC_IMAGE: ghcr.io/${{ github.repository }}:sha-${{ github.sha }}
+      # Release version (e.g. v0.10.0) when release-please cut a release,
+      # otherwise (manual run) the commit sha
+      VERSION: ${{ needs.release.outputs.tag_name || format('sha-{0}', github.sha) }}
+      CF_TAG: mismatch:${{ needs.release.outputs.tag_name || format('sha-{0}', github.sha) }}
     defaults:
       run:
         working-directory: cloudflare
@@ -105,10 +109,14 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Tag GHCR image with the release version
+        if: needs.release.outputs.tag_name != ''
+        run: docker buildx imagetools create -t "$IMAGE:$VERSION" "$SRC_IMAGE"
+
       - name: Copy image from GHCR to Cloudflare registry
         run: |
-          docker pull "$IMAGE:sha-${{ github.sha }}"
-          docker tag "$IMAGE:sha-${{ github.sha }}" "$CF_TAG"
+          docker pull "$SRC_IMAGE"
+          docker tag "$SRC_IMAGE" "$CF_TAG"
           npx wrangler containers push "$CF_TAG"
 
       - name: Point wrangler config at the pushed image

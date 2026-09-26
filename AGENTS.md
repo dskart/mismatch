@@ -96,7 +96,8 @@ Run `make lint` and `make test` before finishing a change.
     `ghcr.io/dskart/mismatch:sha-<commit>` + `latest`. The Docker layer cache is kept in the GitHub Actions cache.
   - `deploy` runs only when release-please creates a release (its release PR is merged), or manually via "Run workflow".
     Cloudflare can't pull from GHCR, so it copies the image into the Cloudflare registry (`wrangler containers push`),
-    rewrites `image` in `wrangler.jsonc` to that ref, and runs `wrangler deploy`, with no rebuild.
+    rewrites `image` in `wrangler.jsonc` to that ref, and runs `wrangler deploy`, with no rebuild. Releases are tagged with
+    the release-please version (`ghcr.io/dskart/mismatch:v0.10.0`, `mismatch:v0.10.0` in Cloudflare); manual runs use `sha-<commit>`.
   - The deploy needs the repo secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`. Merging to `main` without a
     release does not deploy.
   - If you change the `image` line in `wrangler.jsonc`, update the `sed` in the deploy job.
