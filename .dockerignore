@@ -1,0 +1,9 @@
+.git
+target/
+**/node_modules
+src/ui/public/static/
+models/
+gen/
+config.yaml
+config.yml
+cloudflare/

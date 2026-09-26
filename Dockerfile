@@ -57,7 +57,7 @@ COPY ./src ./src
 RUN rm ./target/release/deps/mismatch*
 COPY ./Makefile ./Makefile
 RUN cargo build --release
-run make gen_word_dict
+RUN make gen_word_dict
 
 FROM debian:bookworm-slim
 
@@ -72,4 +72,6 @@ RUN mismatch --help > /dev/null
 
 ENV MISMATCH__APP__MODEL=potion-base-8M
 ENV MISMATCH__APP__STORE__BLOB_STORAGE=LOCAL
+EXPOSE 8080
 ENTRYPOINT ["mismatch"]
+CMD ["serve", "--port", "8080"]

@@ -48,12 +48,26 @@ models: ## Generate models
 	@wget https://huggingface.co/minishlab/potion-base-8M/resolve/main/tokenizer.json -O models/potion-base-8M/tokenizer.json
 	@echo "${GREEN}✨ Models generated!${RESET}"
 
-## Deployment
+## Deployment (Cloudflare Containers)
+.PHONY: cf-setup
+cf-setup: ## Install Cloudflare Worker dependencies
+	@echo "${CYAN}🔧 Installing Cloudflare Worker dependencies...${RESET}"
+	@cd cloudflare && npm install
+	@echo "${GREEN}✅ Cloudflare setup completed!${RESET}"
+
+.PHONY: cf-dev
+cf-dev: ## Run the Worker + container locally (needs Docker)
+	@echo "${CYAN}🌐 Starting wrangler dev...${RESET}"
+	@cd cloudflare && npx wrangler dev
+
+.PHONY: cf-tail
+cf-tail: ## Stream logs from the deployed Worker
+	@cd cloudflare && npx wrangler tail
+
 .PHONY: deploy
-deploy: ## Deploy the application
+deploy: ## Deploy the application to Cloudflare (needs Docker)
 	@echo "${CYAN}🚀 Deploying ...${RESET}"
-	@./docker_build.sh
-	@./deploy.sh
+	@cd cloudflare && npx wrangler deploy
 	@echo "${GREEN}✨ Deployment completed!${RESET}"
 
 ## Linting 

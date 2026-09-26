@@ -5,6 +5,11 @@ on:
     branches: ["main"]
   pull_request:
     branches: ["main"]
+  # Manual (re)deploy of the current main without cutting a release
+  workflow_dispatch:
+
+env:
+  IMAGE: ghcr.io/${{ github.repository }}
 
 jobs:
   release:
@@ -19,7 +24,7 @@ jobs:
       tag_name: ${{ steps.release-please.outputs.tag_name }}
       major: ${{ steps.release-please.outputs.major }}
       minor: ${{ steps.release-please.outputs.minor}}
-    
+
     steps:
       - uses: google-github-actions/release-please-action@v4
         id: release-please
@@ -28,3 +33,91 @@ jobs:
           release-type: rust
           bump-minor-pre-major: true
           bump-patch-for-minor-pre-major: true
+
+  # Builds the image on every PR (no push) and every push to main (pushed to
+  # GHCR as sha-<commit> + latest). Layer cache lives in the GHA cache.
+  image:
+    name: Build Image
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        if: github.event_name != 'pull_request'
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: |
+            ${{ env.IMAGE }}:sha-${{ github.sha }}
+            ${{ env.IMAGE }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # Cloudflare can't pull from GHCR, so copy the prebuilt image into the
+  # Cloudflare registry and deploy the Worker pointing at it.
+  deploy:
+    name: Deploy to Cloudflare
+    needs: [release, image]
+    if: needs.release.outputs.release_created == 'true' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    concurrency:
+      group: cloudflare-deploy
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      packages: read
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CF_TAG: mismatch:sha-${{ github.sha }}
+    defaults:
+      run:
+        working-directory: cloudflare
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: cloudflare/package-lock.json
+
+      - name: Install Worker dependencies
+        run: npm ci
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Copy image from GHCR to Cloudflare registry
+        run: |
+          docker pull "$IMAGE:sha-${{ github.sha }}"
+          docker tag "$IMAGE:sha-${{ github.sha }}" "$CF_TAG"
+          npx wrangler containers push "$CF_TAG"
+
+      - name: Point wrangler config at the pushed image
+        run: |
+          sed -i \
+            -e "s#\"image\": \"../Dockerfile\"#\"image\": \"registry.cloudflare.com/$CLOUDFLARE_ACCOUNT_ID/$CF_TAG\"#" \
+            -e '/"image_build_context"/d' \
+            wrangler.jsonc
+          grep -q "registry.cloudflare.com" wrangler.jsonc
+
+      - name: Deploy
+        run: npx wrangler deploy

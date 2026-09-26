@@ -1,0 +1,39 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "mismatch",
+	"main": "src/index.ts",
+	"compatibility_date": "2026-09-26",
+	// Served at mismatch.<account subdomain>.workers.dev
+	"workers_dev": true,
+	// Each preview URL would spin up its own container instance
+	"preview_urls": false,
+	"observability": {
+		"enabled": true
+	},
+	"containers": [
+		{
+			"class_name": "MismatchContainer",
+			// Build the Rust app from the repo root Dockerfile (must be linux/amd64)
+			"image": "../Dockerfile",
+			"image_build_context": "..",
+			// 1/4 vCPU, 1 GiB: ONNX model + tokenizer is too tight for "lite" (256 MiB)
+			"instance_type": "basic",
+			"max_instances": 3
+		}
+	],
+	"durable_objects": {
+		"bindings": [
+			{
+				"class_name": "MismatchContainer",
+				"name": "MISMATCH"
+			}
+		]
+	},
+	"migrations": [
+		{
+			"new_sqlite_classes": ["MismatchContainer"],
+			"tag": "v1"
+		}
+	],
+	"upload_source_maps": true
+}

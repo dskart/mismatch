@@ -1,0 +1,19 @@
+{
+	"name": "mismatch-worker",
+	"description": "Cloudflare Worker fronting the mismatch Rust container",
+	"dependencies": {
+		"@cloudflare/containers": "0.0.30"
+	},
+	"devDependencies": {
+		"typescript": "5.9.3",
+		"wrangler": "4.136.1"
+	},
+	"private": true,
+	"scripts": {
+		"cf-typegen": "wrangler types",
+		"deploy": "wrangler deploy",
+		"dev": "wrangler dev",
+		"start": "wrangler dev",
+		"tail": "wrangler tail"
+	}
+}
