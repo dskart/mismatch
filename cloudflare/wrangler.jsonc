@@ -7,6 +7,14 @@
 	"workers_dev": true,
 	// Each preview URL would spin up its own container instance
 	"preview_urls": false,
+	// Cloudflare creates the DNS record and certificate; the hostname must not
+	// have an existing DNS record
+	"routes": [
+		{
+			"pattern": "mismatch.raphaelvanhoffelen.com",
+			"custom_domain": true
+		}
+	],
 	"observability": {
 		"enabled": true
 	},

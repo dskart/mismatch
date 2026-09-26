@@ -89,6 +89,8 @@ Run `make lint` and `make test` before finishing a change.
 
 - `cloudflare/wrangler.jsonc` defines a `MismatchContainer` Durable Object class backed by the container image built from
   `../Dockerfile` with build context `..`. It uses instance type `basic` and `max_instances: 3`.
+- Served at `https://mismatch.raphaelvanhoffelen.com` (Worker custom domain in `routes`) and at
+  `mismatch.<account subdomain>.workers.dev`. Preview URLs are disabled.
 - `cloudflare/src/index.ts` load-balances each request with `getRandom(env.MISMATCH, 2)`. Containers sleep after 10 minutes idle, so the
   first request after that has a cold start (container boot + model load).
 - CI (`.github/workflows/release.yml`) separates build and deploy:
