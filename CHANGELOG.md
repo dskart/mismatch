@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.0.0](https://github.com/dskart/mismatch/compare/v0.10.0...v1.0.0) (2026-09-26)
+
+
+### Bug Fixes
+
+* shut down gracefully on SIGTERM ([80b7a58](https://github.com/dskart/mismatch/commit/80b7a584cb6eb10b6a1f4bd98e473ef4bd61fed4))
+
+
+### Miscellaneous Chores
+
+* release 1.0.0 ([154e02d](https://github.com/dskart/mismatch/commit/154e02dd5f4aa138b75f08e2c9571c5604e65a72))
+
 ## [0.10.0](https://github.com/dskart/mismatch/compare/v0.9.0...v0.10.0) (2026-09-26)
 
 
