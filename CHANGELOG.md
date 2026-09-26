@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.0](https://github.com/dskart/mismatch/compare/v0.9.0...v0.10.0) (2026-09-26)
+
+
+### Features
+
+* deploy to Cloudflare Containers ([0ef56a5](https://github.com/dskart/mismatch/commit/0ef56a56a04a0bbaed253ab31af1933673868929))
+
 ## [0.9.0](https://github.com/dskart/mismatch/compare/v0.8.0...v0.9.0) (2025-04-27)
 
 
