@@ -18,5 +18,6 @@ jobs:
     - name: Run tests
       run: | 
         make models
+        make gen_word_dict
         cargo test --verbose
 
