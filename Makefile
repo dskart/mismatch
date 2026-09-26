@@ -12,7 +12,7 @@ all: help
 .PHONY: setup
 setup: ## Setup the project
 	@echo "${CYAN}🔧 Setting up the project...${RESET}"
-	@cargo install systemfd cargo-watch
+	@mise install
 	@make setup-ui
 	@make models
 	@echo "${GREEN}✅ Project setup completed!${RESET}"

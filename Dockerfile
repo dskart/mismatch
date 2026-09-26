@@ -23,7 +23,7 @@ WORKDIR /usr/src/app/mismatch/
 COPY ./Makefile ./Makefile
 RUN make models
 
-FROM rust:1.84-slim-bookworm AS rust-builder
+FROM rust:1.94-slim-bookworm AS rust-builder
 
 RUN apt-get update && apt-get install -y \
     pkg-config \

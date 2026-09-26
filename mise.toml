@@ -1,0 +1,9 @@
+# Toolchain for local dev and CI. Run `mise install` after cloning.
+[tools]
+# Keep in sync with the rust image in Dockerfile
+rust = { version = "1.94", components = "clippy,rustfmt" }
+# Frontend build in src/ui (Dockerfile uses node:20)
+node = "20"
+# Hot reload for `make serve`; prebuilt binaries from GitHub releases
+"github:mitsuhiko/systemfd" = "latest"
+"github:watchexec/cargo-watch" = "latest"

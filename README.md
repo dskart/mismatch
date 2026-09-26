@@ -6,11 +6,13 @@ A word-similarity game powered by ONNX embeddings, served by a Rust (axum) backe
 
 ### Prerequisites
 
+Toolchains (Rust, Node, systemfd, cargo-watch) are pinned in `mise.toml`. Install [mise](https://mise.jdx.dev), then:
+
 ```bash
-cargo install cargo-watch systemfd
+mise install
 ```
 
-You also need Node (see `src/ui/.nvmrc`), `wget`, and ONNX Runtime.
+You also need `wget` and ONNX Runtime.
 
 ```bash
 make setup

@@ -27,13 +27,17 @@ model. There's a free-play mode at `/` and a daily mode at `/daily`.
 | `src/bin/gen_word_dict/` | Build-time tool that downloads SCOWL and writes `gen/english_words.txt` |
 | `cloudflare/` | Worker + `wrangler.jsonc` for Cloudflare Containers deployment |
 | `Dockerfile` | Multi-stage build: UI, models, Rust + ONNX Runtime 1.16.3 (x64), then a slim runtime image |
+| `mise.toml` | Pinned toolchain versions (Rust, Node, dev tools) |
 
 ## First-time setup
 
 `models/`, `gen/`, `config.yaml` and `src/ui/public/static/` are gitignored and must be generated:
 
+Toolchains are managed with [mise](https://mise.jdx.dev) (`mise.toml`: Rust 1.94 + clippy/rustfmt, Node 20, systemfd,
+cargo-watch). CI installs Rust through `jdx/mise-action`.
+
 ```bash
-make setup           # installs systemfd + cargo-watch, runs setup-ui and models
+make setup           # mise install, then setup-ui and models
 make gen_word_dict   # writes gen/english_words.txt (needs network)
 ```
 
@@ -77,6 +81,8 @@ Run `make lint` and `make test` before finishing a change.
   Silicon, Docker builds under emulation, which is slow.
 - The Dockerfile uses `ENTRYPOINT ["mismatch"]` + `CMD ["serve", "--port", "8080"]`. Port 8080 must match `defaultPort` in
   `cloudflare/src/index.ts`.
+- The Rust version is pinned in two places: `mise.toml` and the `rust:<version>-slim-bookworm` image in `Dockerfile`.
+  Bump them together.
 - Templates are compiled into the binary, so after editing any `.html.j2` you need to rebuild (`make serve` handles this).
 
 ## Deployment (Cloudflare Containers)
