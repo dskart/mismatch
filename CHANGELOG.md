@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/dskart/mismatch/compare/v1.0.0...v1.1.0) (2026-09-26)
+
+
+### Features
+
+* serve on mismatch.raphaelvanhoffelen.com ([8aa94d3](https://github.com/dskart/mismatch/commit/8aa94d37e40c8924913119e05058ffac39b5f880))
+
 ## [1.0.0](https://github.com/dskart/mismatch/compare/v0.10.0...v1.0.0) (2026-09-26)
 
 
